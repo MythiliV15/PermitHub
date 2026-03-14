@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome to PermitHub</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        .container {
+            max-width: 600px;
+            margin: 20px auto;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 28px;
+        }
+        .content {
+            padding: 30px;
+        }
+        .credentials-box {
+            background: #e8f5e9;
+            border-left: 4px solid #4caf50;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        .button {
+            display: inline-block;
+            padding: 12px 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            margin: 10px 0;
+            font-weight: 500;
+        }
+        .footer {
+            background: #f8f9fa;
+            padding: 20px;
+            text-align: center;
+            font-size: 14px;
+            color: #666;
+        }
+        .warning {
+            color: #d32f2f;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎉 Welcome to PermitHub!</h1>
+        </div>
+        
+        <div class="content">
+            <p>Hello <span th:text="${name}">User</span>,</p>
+            
+            <p>Your account has been created successfully. You can now access the PermitHub system to manage permissions, leaves, and outpass requests.</p>
+            
+            <div class="credentials-box">
+                <h3 style="margin-top: 0;">Your Login Credentials:</h3>
+                <p><strong>Temporary Password:</strong> <code style="background: #f4f4f4; padding: 5px; border-radius: 3px;" th:text="${temporaryPassword}">password123</code></p>
+                <p class="warning"><strong>⚠️ Important:</strong> For security reasons, you'll be required to change your password on first login.</p>
+            </div>
+            
+            <div style="text-align: center;">
+                <a th:href="${loginLink}" class="button">Login to PermitHub</a>
+            </div>
+            
+            <h3>What you can do with PermitHub:</h3>
+            <ul>
+                <li>Apply for leaves and track their status</li>
+                <li>Request on-duty (OD) for events</li>
+                <li>Apply for outpass (hostel students)</li>
+                <li>Track your leave balance</li>
+                <li>View approval history</li>
+            </ul>
+            
+            <p>If you have any questions, please contact your class advisor or HOD.</p>
+        </div>
+        
+        <div class="footer">
+            <p>&copy; 2024 PermitHub. All rights reserved.</p>
+            <p>This is an automated message, please do not reply to this email.</p>
+        </div>
+    </div>
+</body>
+</html>

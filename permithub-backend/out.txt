@@ -1,0 +1,318 @@
+[INFO] Scanning for projects...
+[INFO] 
+[INFO] ------------------< com.permithub:permithub-backend >-------------------
+[INFO] Building permithub-backend 0.0.1-SNAPSHOT
+[INFO]   from pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ permithub-backend ---
+[INFO] Copying 1 resource from src\main\resources to target\classes
+[INFO] Copying 10 resources from src\main\resources to target\classes
+[INFO] 
+[INFO] --- compiler:3.11.0:compile (default-compile) @ permithub-backend ---
+[INFO] Changes detected - recompiling the module! :source
+[INFO] Compiling 84 source files with javac [debug release 17] to target\classes
+[INFO] Annotation processing is enabled because one or more processors were found
+  on the class path. A future release of javac may disable annotation processing
+  unless at least one processor is specified by name (-processor), or a search
+  path is specified (--processor-path, --processor-module-path), or annotation
+  processing is enabled explicitly (-proc:only, -proc:full).
+  Use -Xlint:-options to suppress this message.
+  Use -proc:none to disable annotation processing.
+[INFO] /C:/Study material/react/Smart Campus PermitHub/permithub-backend/src/main/java/com/permithub/entity/SemesterStudentHistory.java: C:\Study material\react\Smart Campus PermitHub\permithub-backend\src\main\java\com\permithub\entity\SemesterStudentHistory.java uses or overrides a deprecated API.
+[INFO] /C:/Study material/react/Smart Campus PermitHub/permithub-backend/src/main/java/com/permithub/entity/SemesterStudentHistory.java: Recompile with -Xlint:deprecation for details.
+[INFO] -------------------------------------------------------------
+[ERROR] COMPILATION ERROR : 
+[INFO] -------------------------------------------------------------
+[ERROR] /C:/Study material/react/Smart Campus PermitHub/permithub-backend/src/main/java/com/permithub/service/AuthServiceImpl.java:[48,9] cannot find symbol
+  symbol:   class CustomUserDetails
+  location: class com.permithub.service.AuthServiceImpl
+[ERROR] /C:/Study material/react/Smart Campus PermitHub/permithub-backend/src/main/java/com/permithub/service/AuthServiceImpl.java:[48,42] cannot find symbol
+  symbol:   class CustomUserDetails
+  location: class com.permithub.service.AuthServiceImpl
+[ERROR] /C:/Study material/react/Smart Campus PermitHub/permithub-backend/src/main/java/com/permithub/service/hod/HODApprovalServiceImpl.java:[202,75] cannot find symbol
+  symbol:   method findByHod(com.permithub.entity.Faculty)
+  location: variable outpassRequestRepository of type com.permithub.repository.OutpassRequestRepository
+[ERROR] /C:/Study material/react/Smart Campus PermitHub/permithub-backend/src/main/java/com/permithub/service/hod/HODApprovalServiceImpl.java:[401,50] cannot find symbol
+  symbol:   method getUser()
+  location: class com.permithub.entity.Student
+[ERROR] /C:/Study material/react/Smart Campus PermitHub/permithub-backend/src/main/java/com/permithub/service/hod/HODApprovalServiceImpl.java:[406,32] cannot find symbol
+  symbol:   method getUser()
+  location: variable hod of type com.permithub.entity.Faculty
+[ERROR] /C:/Study material/react/Smart Campus PermitHub/permithub-backend/src/main/java/com/permithub/service/hod/HODApprovalServiceImpl.java:[432,50] cannot find symbol
+  symbol:   method getUser()
+  location: class com.permithub.entity.Student
+[ERROR] /C:/Study material/react/Smart Campus PermitHub/permithub-backend/src/main/java/com/permithub/service/hod/HODApprovalServiceImpl.java:[437,32] cannot find symbol
+  symbol:   method getUser()
+  location: variable hod of type com.permithub.entity.Faculty
+[ERROR] /C:/Study material/react/Smart Campus PermitHub/permithub-backend/src/main/java/com/permithub/service/hod/HODApprovalServiceImpl.java:[469,50] cannot find symbol
+  symbol:   method getUser()
+  location: class com.permithub.entity.Student
+[ERROR] /C:/Study material/react/Smart Campus PermitHub/permithub-backend/src/main/java/com/permithub/service/hod/HODApprovalServiceImpl.java:[474,32] cannot find symbol
+  symbol:   method getUser()
+  location: variable hod of type com.permithub.entity.Faculty
+[ERROR] /C:/Study material/react/Smart Campus PermitHub/permithub-backend/src/main/java/com/permithub/service/hod/HODApprovalServiceImpl.java:[500,50] cannot find symbol
+  symbol:   method getUser()
+  location: class com.permithub.entity.Student
+[ERROR] /C:/Study material/react/Smart Campus PermitHub/permithub-backend/src/main/java/com/permithub/service/hod/HODApprovalServiceImpl.java:[505,32] cannot find symbol
+  symbol:   method getUser()
+  location: variable hod of type com.permithub.entity.Faculty
+[ERROR] /C:/Study material/react/Smart Campus PermitHub/permithub-backend/src/main/java/com/permithub/service/hod/HODApprovalServiceImpl.java:[526,16] cannot find symbol
+  symbol:   method setHodRemark(java.lang.String)
+  location: variable request of type com.permithub.entity.OutpassRequest
+[ERROR] /C:/Study material/react/Smart Campus PermitHub/permithub-backend/src/main/java/com/permithub/service/hod/HODApprovalServiceImpl.java:[527,16] cannot find symbol
+  symbol:   method setHodActionDate(java.time.LocalDateTime)
+  location: variable request of type com.permithub.entity.OutpassRequest
+[ERROR] /C:/Study material/react/Smart Campus PermitHub/permithub-backend/src/main/java/com/permithub/service/hod/HODApprovalServiceImpl.java:[536,50] cannot find symbol
+  symbol:   method getUser()
+  location: class com.permithub.entity.Student
+[ERROR] /C:/Study material/react/Smart Campus PermitHub/permithub-backend/src/main/java/com/permithub/service/hod/HODApprovalServiceImpl.java:[541,32] cannot find symbol
+  symbol:   method getUser()
+  location: variable hod of type com.permithub.entity.Faculty
+[ERROR] /C:/Study material/react/Smart Campus PermitHub/permithub-backend/src/main/java/com/permithub/service/hod/HODApprovalServiceImpl.java:[556,16] cannot find symbol
+  symbol:   method setHodRemark(java.lang.String)
+  location: variable request of type com.permithub.entity.OutpassRequest
+[ERROR] /C:/Study material/react/Smart Campus PermitHub/permithub-backend/src/main/java/com/permithub/service/hod/HODApprovalServiceImpl.java:[557,16] cannot find symbol
+  symbol:   method setHodActionDate(java.time.LocalDateTime)
+  location: variable request of type com.permithub.entity.OutpassRequest
+[ERROR] /C:/Study material/react/Smart Campus PermitHub/permithub-backend/src/main/java/com/permithub/service/hod/HODApprovalServiceImpl.java:[566,50] cannot find symbol
+  symbol:   method getUser()
+  location: class com.permithub.entity.Student
+[ERROR] /C:/Study material/react/Smart Campus PermitHub/permithub-backend/src/main/java/com/permithub/service/hod/HODApprovalServiceImpl.java:[571,32] cannot find symbol
+  symbol:   method getUser()
+  location: variable hod of type com.permithub.entity.Faculty
+[ERROR] /C:/Study material/react/Smart Campus PermitHub/permithub-backend/src/main/java/com/permithub/service/hod/HODApprovalServiceImpl.java:[586,52] cannot find symbol
+  symbol:   method getUser()
+  location: class com.permithub.entity.Student
+[ERROR] /C:/Study material/react/Smart Campus PermitHub/permithub-backend/src/main/java/com/permithub/service/hod/HODApprovalServiceImpl.java:[607,52] cannot find symbol
+  symbol:   method getUser()
+  location: class com.permithub.entity.Student
+[ERROR] /C:/Study material/react/Smart Campus PermitHub/permithub-backend/src/main/java/com/permithub/service/hod/HODApprovalServiceImpl.java:[630,52] cannot find symbol
+  symbol:   method getUser()
+  location: class com.permithub.entity.Student
+[ERROR] /C:/Study material/react/Smart Campus PermitHub/permithub-backend/src/main/java/com/permithub/service/hod/HODApprovalServiceImpl.java:[651,52] cannot find symbol
+  symbol:   method getUser()
+  location: class com.permithub.entity.Student
+[ERROR] /C:/Study material/react/Smart Campus PermitHub/permithub-backend/src/main/java/com/permithub/service/hod/HODApprovalServiceImpl.java:[664,52] cannot find symbol
+  symbol:   method getUser()
+  location: class com.permithub.entity.Student
+[ERROR] /C:/Study material/react/Smart Campus PermitHub/permithub-backend/src/main/java/com/permithub/service/hod/HODApprovalServiceImpl.java:[677,52] cannot find symbol
+  symbol:   method getUser()
+  location: class com.permithub.entity.Student
+[ERROR] /C:/Study material/react/Smart Campus PermitHub/permithub-backend/src/main/java/com/permithub/service/hod/HODApprovalServiceImpl.java:[680,35] cannot find symbol
+  symbol:   method getHodRemark()
+  location: variable request of type com.permithub.entity.OutpassRequest
+[ERROR] /C:/Study material/react/Smart Campus PermitHub/permithub-backend/src/main/java/com/permithub/service/hod/HODApprovalServiceImpl.java:[681,38] cannot find symbol
+  symbol:   method getHodActionDate()
+  location: variable request of type com.permithub.entity.OutpassRequest
+[ERROR] /C:/Study material/react/Smart Campus PermitHub/permithub-backend/src/main/java/com/permithub/service/hod/HODApprovalServiceImpl.java:[688,53] cannot find symbol
+  symbol:   method getUser()
+  location: class com.permithub.entity.Student
+[ERROR] /C:/Study material/react/Smart Campus PermitHub/permithub-backend/src/main/java/com/permithub/service/hod/HODApprovalServiceImpl.java:[689,53] cannot find symbol
+  symbol:   method getUser()
+  location: class com.permithub.entity.Student
+[ERROR] /C:/Study material/react/Smart Campus PermitHub/permithub-backend/src/main/java/com/permithub/service/hod/HODApprovalServiceImpl.java:[694,80] cannot find symbol
+  symbol:   method getUser()
+  location: class com.permithub.entity.Faculty
+[ERROR] /C:/Study material/react/Smart Campus PermitHub/permithub-backend/src/main/java/com/permithub/service/hod/HODApprovalServiceImpl.java:[695,98] cannot find symbol
+  symbol:   method getUser()
+  location: class com.permithub.entity.Faculty
+[ERROR] /C:/Study material/react/Smart Campus PermitHub/permithub-backend/src/main/java/com/permithub/service/hod/HODApprovalServiceImpl.java:[701,53] cannot find symbol
+  symbol:   method getUser()
+  location: class com.permithub.entity.Student
+[ERROR] /C:/Study material/react/Smart Campus PermitHub/permithub-backend/src/main/java/com/permithub/service/hod/HODApprovalServiceImpl.java:[702,53] cannot find symbol
+  symbol:   method getUser()
+  location: class com.permithub.entity.Student
+[ERROR] /C:/Study material/react/Smart Campus PermitHub/permithub-backend/src/main/java/com/permithub/service/hod/HODApprovalServiceImpl.java:[708,80] cannot find symbol
+  symbol:   method getUser()
+  location: class com.permithub.entity.Faculty
+[ERROR] /C:/Study material/react/Smart Campus PermitHub/permithub-backend/src/main/java/com/permithub/service/hod/HODApprovalServiceImpl.java:[709,105] cannot find symbol
+  symbol:   method getUser()
+  location: class com.permithub.entity.Faculty
+[ERROR] /C:/Study material/react/Smart Campus PermitHub/permithub-backend/src/main/java/com/permithub/service/hod/HODApprovalServiceImpl.java:[710,98] cannot find symbol
+  symbol:   method getUser()
+  location: class com.permithub.entity.Faculty
+[ERROR] /C:/Study material/react/Smart Campus PermitHub/permithub-backend/src/main/java/com/permithub/service/hod/HODApprovalServiceImpl.java:[716,53] cannot find symbol
+  symbol:   method getUser()
+  location: class com.permithub.entity.Student
+[ERROR] /C:/Study material/react/Smart Campus PermitHub/permithub-backend/src/main/java/com/permithub/service/hod/HODApprovalServiceImpl.java:[717,53] cannot find symbol
+  symbol:   method getUser()
+  location: class com.permithub.entity.Student
+[ERROR] /C:/Study material/react/Smart Campus PermitHub/permithub-backend/src/main/java/com/permithub/service/hod/HODApprovalServiceImpl.java:[725,80] cannot find symbol
+  symbol:   method getUser()
+  location: class com.permithub.entity.Faculty
+[ERROR] /C:/Study material/react/Smart Campus PermitHub/permithub-backend/src/main/java/com/permithub/service/hod/HODApprovalServiceImpl.java:[726,98] cannot find symbol
+  symbol:   method getUser()
+  location: class com.permithub.entity.Faculty
+[ERROR] /C:/Study material/react/Smart Campus PermitHub/permithub-backend/src/main/java/com/permithub/service/hod/HODApprovalServiceImpl.java:[727,80] cannot find symbol
+  symbol:   method getUser()
+  location: class com.permithub.entity.Faculty
+[ERROR] /C:/Study material/react/Smart Campus PermitHub/permithub-backend/src/main/java/com/permithub/service/hod/SemesterServiceImpl.java:[74,31] cannot find symbol
+  symbol:   method getUser()
+  location: variable hod of type com.permithub.entity.Faculty
+[ERROR] /C:/Study material/react/Smart Campus PermitHub/permithub-backend/src/main/java/com/permithub/service/hod/SemesterServiceImpl.java:[324,63] cannot find symbol
+  symbol:   method getUser()
+  location: variable s of type com.permithub.entity.Student
+[ERROR] /C:/Study material/react/Smart Campus PermitHub/permithub-backend/src/main/java/com/permithub/service/hod/FacultyManagementServiceImpl.java:[77,118] cannot find symbol
+  symbol:   variable FACULTY
+  location: class com.permithub.entity.Role
+[ERROR] /C:/Study material/react/Smart Campus PermitHub/permithub-backend/src/main/java/com/permithub/service/UserDetailsServiceImpl.java:[25,20] cannot find symbol
+  symbol:   class CustomUserDetails
+  location: class com.permithub.service.UserDetailsServiceImpl
+[ERROR] /C:/Study material/react/Smart Campus PermitHub/permithub-backend/src/main/java/com/permithub/service/hod/BulkUploadServiceImpl.java:[337,122] cannot find symbol
+  symbol:   variable FACULTY
+  location: class com.permithub.entity.Role
+[INFO] 46 errors 
+[INFO] -------------------------------------------------------------
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD FAILURE
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  8.322 s
+[INFO] Finished at: 2026-03-13T13:41:45+05:30
+[INFO] ------------------------------------------------------------------------
+[ERROR] Failed to execute goal org.apache.maven.plugins:maven-compiler-plugin:3.11.0:compile (default-compile) on project permithub-backend: Compilation failure: Compilation failure: 
+[ERROR] /C:/Study material/react/Smart Campus PermitHub/permithub-backend/src/main/java/com/permithub/service/AuthServiceImpl.java:[48,9] cannot find symbol
+[ERROR]   symbol:   class CustomUserDetails
+[ERROR]   location: class com.permithub.service.AuthServiceImpl
+[ERROR] /C:/Study material/react/Smart Campus PermitHub/permithub-backend/src/main/java/com/permithub/service/AuthServiceImpl.java:[48,42] cannot find symbol
+[ERROR]   symbol:   class CustomUserDetails
+[ERROR]   location: class com.permithub.service.AuthServiceImpl
+[ERROR] /C:/Study material/react/Smart Campus PermitHub/permithub-backend/src/main/java/com/permithub/service/hod/HODApprovalServiceImpl.java:[202,75] cannot find symbol
+[ERROR]   symbol:   method findByHod(com.permithub.entity.Faculty)
+[ERROR]   location: variable outpassRequestRepository of type com.permithub.repository.OutpassRequestRepository
+[ERROR] /C:/Study material/react/Smart Campus PermitHub/permithub-backend/src/main/java/com/permithub/service/hod/HODApprovalServiceImpl.java:[401,50] cannot find symbol
+[ERROR]   symbol:   method getUser()
+[ERROR]   location: class com.permithub.entity.Student
+[ERROR] /C:/Study material/react/Smart Campus PermitHub/permithub-backend/src/main/java/com/permithub/service/hod/HODApprovalServiceImpl.java:[406,32] cannot find symbol
+[ERROR]   symbol:   method getUser()
+[ERROR]   location: variable hod of type com.permithub.entity.Faculty
+[ERROR] /C:/Study material/react/Smart Campus PermitHub/permithub-backend/src/main/java/com/permithub/service/hod/HODApprovalServiceImpl.java:[432,50] cannot find symbol
+[ERROR]   symbol:   method getUser()
+[ERROR]   location: class com.permithub.entity.Student
+[ERROR] /C:/Study material/react/Smart Campus PermitHub/permithub-backend/src/main/java/com/permithub/service/hod/HODApprovalServiceImpl.java:[437,32] cannot find symbol
+[ERROR]   symbol:   method getUser()
+[ERROR]   location: variable hod of type com.permithub.entity.Faculty
+[ERROR] /C:/Study material/react/Smart Campus PermitHub/permithub-backend/src/main/java/com/permithub/service/hod/HODApprovalServiceImpl.java:[469,50] cannot find symbol
+[ERROR]   symbol:   method getUser()
+[ERROR]   location: class com.permithub.entity.Student
+[ERROR] /C:/Study material/react/Smart Campus PermitHub/permithub-backend/src/main/java/com/permithub/service/hod/HODApprovalServiceImpl.java:[474,32] cannot find symbol
+[ERROR]   symbol:   method getUser()
+[ERROR]   location: variable hod of type com.permithub.entity.Faculty
+[ERROR] /C:/Study material/react/Smart Campus PermitHub/permithub-backend/src/main/java/com/permithub/service/hod/HODApprovalServiceImpl.java:[500,50] cannot find symbol
+[ERROR]   symbol:   method getUser()
+[ERROR]   location: class com.permithub.entity.Student
+[ERROR] /C:/Study material/react/Smart Campus PermitHub/permithub-backend/src/main/java/com/permithub/service/hod/HODApprovalServiceImpl.java:[505,32] cannot find symbol
+[ERROR]   symbol:   method getUser()
+[ERROR]   location: variable hod of type com.permithub.entity.Faculty
+[ERROR] /C:/Study material/react/Smart Campus PermitHub/permithub-backend/src/main/java/com/permithub/service/hod/HODApprovalServiceImpl.java:[526,16] cannot find symbol
+[ERROR]   symbol:   method setHodRemark(java.lang.String)
+[ERROR]   location: variable request of type com.permithub.entity.OutpassRequest
+[ERROR] /C:/Study material/react/Smart Campus PermitHub/permithub-backend/src/main/java/com/permithub/service/hod/HODApprovalServiceImpl.java:[527,16] cannot find symbol
+[ERROR]   symbol:   method setHodActionDate(java.time.LocalDateTime)
+[ERROR]   location: variable request of type com.permithub.entity.OutpassRequest
+[ERROR] /C:/Study material/react/Smart Campus PermitHub/permithub-backend/src/main/java/com/permithub/service/hod/HODApprovalServiceImpl.java:[536,50] cannot find symbol
+[ERROR]   symbol:   method getUser()
+[ERROR]   location: class com.permithub.entity.Student
+[ERROR] /C:/Study material/react/Smart Campus PermitHub/permithub-backend/src/main/java/com/permithub/service/hod/HODApprovalServiceImpl.java:[541,32] cannot find symbol
+[ERROR]   symbol:   method getUser()
+[ERROR]   location: variable hod of type com.permithub.entity.Faculty
+[ERROR] /C:/Study material/react/Smart Campus PermitHub/permithub-backend/src/main/java/com/permithub/service/hod/HODApprovalServiceImpl.java:[556,16] cannot find symbol
+[ERROR]   symbol:   method setHodRemark(java.lang.String)
+[ERROR]   location: variable request of type com.permithub.entity.OutpassRequest
+[ERROR] /C:/Study material/react/Smart Campus PermitHub/permithub-backend/src/main/java/com/permithub/service/hod/HODApprovalServiceImpl.java:[557,16] cannot find symbol
+[ERROR]   symbol:   method setHodActionDate(java.time.LocalDateTime)
+[ERROR]   location: variable request of type com.permithub.entity.OutpassRequest
+[ERROR] /C:/Study material/react/Smart Campus PermitHub/permithub-backend/src/main/java/com/permithub/service/hod/HODApprovalServiceImpl.java:[566,50] cannot find symbol
+[ERROR]   symbol:   method getUser()
+[ERROR]   location: class com.permithub.entity.Student
+[ERROR] /C:/Study material/react/Smart Campus PermitHub/permithub-backend/src/main/java/com/permithub/service/hod/HODApprovalServiceImpl.java:[571,32] cannot find symbol
+[ERROR]   symbol:   method getUser()
+[ERROR]   location: variable hod of type com.permithub.entity.Faculty
+[ERROR] /C:/Study material/react/Smart Campus PermitHub/permithub-backend/src/main/java/com/permithub/service/hod/HODApprovalServiceImpl.java:[586,52] cannot find symbol
+[ERROR]   symbol:   method getUser()
+[ERROR]   location: class com.permithub.entity.Student
+[ERROR] /C:/Study material/react/Smart Campus PermitHub/permithub-backend/src/main/java/com/permithub/service/hod/HODApprovalServiceImpl.java:[607,52] cannot find symbol
+[ERROR]   symbol:   method getUser()
+[ERROR]   location: class com.permithub.entity.Student
+[ERROR] /C:/Study material/react/Smart Campus PermitHub/permithub-backend/src/main/java/com/permithub/service/hod/HODApprovalServiceImpl.java:[630,52] cannot find symbol
+[ERROR]   symbol:   method getUser()
+[ERROR]   location: class com.permithub.entity.Student
+[ERROR] /C:/Study material/react/Smart Campus PermitHub/permithub-backend/src/main/java/com/permithub/service/hod/HODApprovalServiceImpl.java:[651,52] cannot find symbol
+[ERROR]   symbol:   method getUser()
+[ERROR]   location: class com.permithub.entity.Student
+[ERROR] /C:/Study material/react/Smart Campus PermitHub/permithub-backend/src/main/java/com/permithub/service/hod/HODApprovalServiceImpl.java:[664,52] cannot find symbol
+[ERROR]   symbol:   method getUser()
+[ERROR]   location: class com.permithub.entity.Student
+[ERROR] /C:/Study material/react/Smart Campus PermitHub/permithub-backend/src/main/java/com/permithub/service/hod/HODApprovalServiceImpl.java:[677,52] cannot find symbol
+[ERROR]   symbol:   method getUser()
+[ERROR]   location: class com.permithub.entity.Student
+[ERROR] /C:/Study material/react/Smart Campus PermitHub/permithub-backend/src/main/java/com/permithub/service/hod/HODApprovalServiceImpl.java:[680,35] cannot find symbol
+[ERROR]   symbol:   method getHodRemark()
+[ERROR]   location: variable request of type com.permithub.entity.OutpassRequest
+[ERROR] /C:/Study material/react/Smart Campus PermitHub/permithub-backend/src/main/java/com/permithub/service/hod/HODApprovalServiceImpl.java:[681,38] cannot find symbol
+[ERROR]   symbol:   method getHodActionDate()
+[ERROR]   location: variable request of type com.permithub.entity.OutpassRequest
+[ERROR] /C:/Study material/react/Smart Campus PermitHub/permithub-backend/src/main/java/com/permithub/service/hod/HODApprovalServiceImpl.java:[688,53] cannot find symbol
+[ERROR]   symbol:   method getUser()
+[ERROR]   location: class com.permithub.entity.Student
+[ERROR] /C:/Study material/react/Smart Campus PermitHub/permithub-backend/src/main/java/com/permithub/service/hod/HODApprovalServiceImpl.java:[689,53] cannot find symbol
+[ERROR]   symbol:   method getUser()
+[ERROR]   location: class com.permithub.entity.Student
+[ERROR] /C:/Study material/react/Smart Campus PermitHub/permithub-backend/src/main/java/com/permithub/service/hod/HODApprovalServiceImpl.java:[694,80] cannot find symbol
+[ERROR]   symbol:   method getUser()
+[ERROR]   location: class com.permithub.entity.Faculty
+[ERROR] /C:/Study material/react/Smart Campus PermitHub/permithub-backend/src/main/java/com/permithub/service/hod/HODApprovalServiceImpl.java:[695,98] cannot find symbol
+[ERROR]   symbol:   method getUser()
+[ERROR]   location: class com.permithub.entity.Faculty
+[ERROR] /C:/Study material/react/Smart Campus PermitHub/permithub-backend/src/main/java/com/permithub/service/hod/HODApprovalServiceImpl.java:[701,53] cannot find symbol
+[ERROR]   symbol:   method getUser()
+[ERROR]   location: class com.permithub.entity.Student
+[ERROR] /C:/Study material/react/Smart Campus PermitHub/permithub-backend/src/main/java/com/permithub/service/hod/HODApprovalServiceImpl.java:[702,53] cannot find symbol
+[ERROR]   symbol:   method getUser()
+[ERROR]   location: class com.permithub.entity.Student
+[ERROR] /C:/Study material/react/Smart Campus PermitHub/permithub-backend/src/main/java/com/permithub/service/hod/HODApprovalServiceImpl.java:[708,80] cannot find symbol
+[ERROR]   symbol:   method getUser()
+[ERROR]   location: class com.permithub.entity.Faculty
+[ERROR] /C:/Study material/react/Smart Campus PermitHub/permithub-backend/src/main/java/com/permithub/service/hod/HODApprovalServiceImpl.java:[709,105] cannot find symbol
+[ERROR]   symbol:   method getUser()
+[ERROR]   location: class com.permithub.entity.Faculty
+[ERROR] /C:/Study material/react/Smart Campus PermitHub/permithub-backend/src/main/java/com/permithub/service/hod/HODApprovalServiceImpl.java:[710,98] cannot find symbol
+[ERROR]   symbol:   method getUser()
+[ERROR]   location: class com.permithub.entity.Faculty
+[ERROR] /C:/Study material/react/Smart Campus PermitHub/permithub-backend/src/main/java/com/permithub/service/hod/HODApprovalServiceImpl.java:[716,53] cannot find symbol
+[ERROR]   symbol:   method getUser()
+[ERROR]   location: class com.permithub.entity.Student
+[ERROR] /C:/Study material/react/Smart Campus PermitHub/permithub-backend/src/main/java/com/permithub/service/hod/HODApprovalServiceImpl.java:[717,53] cannot find symbol
+[ERROR]   symbol:   method getUser()
+[ERROR]   location: class com.permithub.entity.Student
+[ERROR] /C:/Study material/react/Smart Campus PermitHub/permithub-backend/src/main/java/com/permithub/service/hod/HODApprovalServiceImpl.java:[725,80] cannot find symbol
+[ERROR]   symbol:   method getUser()
+[ERROR]   location: class com.permithub.entity.Faculty
+[ERROR] /C:/Study material/react/Smart Campus PermitHub/permithub-backend/src/main/java/com/permithub/service/hod/HODApprovalServiceImpl.java:[726,98] cannot find symbol
+[ERROR]   symbol:   method getUser()
+[ERROR]   location: class com.permithub.entity.Faculty
+[ERROR] /C:/Study material/react/Smart Campus PermitHub/permithub-backend/src/main/java/com/permithub/service/hod/HODApprovalServiceImpl.java:[727,80] cannot find symbol
+[ERROR]   symbol:   method getUser()
+[ERROR]   location: class com.permithub.entity.Faculty
+[ERROR] /C:/Study material/react/Smart Campus PermitHub/permithub-backend/src/main/java/com/permithub/service/hod/SemesterServiceImpl.java:[74,31] cannot find symbol
+[ERROR]   symbol:   method getUser()
+[ERROR]   location: variable hod of type com.permithub.entity.Faculty
+[ERROR] /C:/Study material/react/Smart Campus PermitHub/permithub-backend/src/main/java/com/permithub/service/hod/SemesterServiceImpl.java:[324,63] cannot find symbol
+[ERROR]   symbol:   method getUser()
+[ERROR]   location: variable s of type com.permithub.entity.Student
+[ERROR] /C:/Study material/react/Smart Campus PermitHub/permithub-backend/src/main/java/com/permithub/service/hod/FacultyManagementServiceImpl.java:[77,118] cannot find symbol
+[ERROR]   symbol:   variable FACULTY
+[ERROR]   location: class com.permithub.entity.Role
+[ERROR] /C:/Study material/react/Smart Campus PermitHub/permithub-backend/src/main/java/com/permithub/service/UserDetailsServiceImpl.java:[25,20] cannot find symbol
+[ERROR]   symbol:   class CustomUserDetails
+[ERROR]   location: class com.permithub.service.UserDetailsServiceImpl
+[ERROR] /C:/Study material/react/Smart Campus PermitHub/permithub-backend/src/main/java/com/permithub/service/hod/BulkUploadServiceImpl.java:[337,122] cannot find symbol
+[ERROR]   symbol:   variable FACULTY
+[ERROR]   location: class com.permithub.entity.Role
+[ERROR] -> [Help 1]
+[ERROR] 
+[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.
+[ERROR] Re-run Maven using the -X switch to enable full debug logging.
+[ERROR] 
+[ERROR] For more information about the errors and possible solutions, please read the following articles:
+[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoFailureException
