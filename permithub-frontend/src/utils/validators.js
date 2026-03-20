@@ -67,14 +67,14 @@ export const facultySchema = yup.object().shape({
         .email('Invalid email format'),
     
     phoneNumber: yup.string()
-        .required('Phone number is required')
-        .matches(/^[0-9]{10}$/, 'Phone number must be 10 digits'),
+        .nullable()
+        .matches(/^[0-9]{10}$/, { message: 'Phone number must be 10 digits', excludeEmptyString: true }),
     
     designation: yup.string()
-        .required('Designation is required'),
+        .nullable(),
     
     qualification: yup.string()
-        .required('Qualification is required'),
+        .nullable(),
     
     experienceYears: yup.number()
         .typeError('Experience must be a number')

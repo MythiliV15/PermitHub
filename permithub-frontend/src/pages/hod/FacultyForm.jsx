@@ -3,7 +3,7 @@ import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { FiSave, FiX, FiUser, FiMail, FiPhone, FiBriefcase, FiCalendar } from 'react-icons/fi';
 import { facultySchema } from '../../utils/validators';
 import {
@@ -14,6 +14,8 @@ import {
     clearCurrentFaculty
 } from '../../store/facultySlice';
 import { useToast } from '../../hooks/useToast';
+import { useAuth } from '../../hooks/useAuth';
+import { FiChevronDown, FiChevronUp, FiInfo } from 'react-icons/fi';
 
 const roleOptions = [
     { value: 'FACULTY_MENTOR', label: 'Mentor' },
@@ -27,9 +29,10 @@ const FacultyForm = () => {
     const location = useLocation();
     const dispatch = useDispatch();
     const { showSuccess, showError, showLoading, dismiss } = useToast();
-    
+    const { user } = useAuth();
     const currentFaculty = useSelector(selectCurrentFaculty);
     const isEditMode = !!id || location.state?.faculty;
+    const [showAdvanced, setShowAdvanced] = useState(false);
 
     const [selectedRoles, setSelectedRoles] = useState([]);
 
@@ -78,6 +81,7 @@ const FacultyForm = () => {
         try {
             const facultyData = {
                 ...data,
+                departmentId: user?.departmentId || user?.department?.id, // Ensure departmentId is sent
                 roles: selectedRoles
             };
 
@@ -89,7 +93,7 @@ const FacultyForm = () => {
             } else {
                 await dispatch(addFaculty(facultyData)).unwrap();
                 dismiss(toastId);
-                showSuccess('Faculty added successfully');
+                showSuccess(`Faculty added successfully. Default password: Welcome@123`);
             }
             navigate('/hod/faculty');
         } catch (error) {
@@ -191,8 +195,8 @@ const FacultyForm = () => {
                             </div>
 
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">
-                                    Phone Number <span className="text-red-500">*</span>
+                                 <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    Phone Number
                                 </label>
                                 <div className="relative">
                                     <FiPhone className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
@@ -210,6 +214,10 @@ const FacultyForm = () => {
                                 )}
                             </div>
                         </div>
+                        <div className="mt-4 p-3 bg-blue-50 rounded-lg flex items-start text-xs text-blue-700">
+                            <FiInfo className="mr-2 h-4 w-4 flex-shrink-0" />
+                            <p>Once added, the faculty can log in using their email and the default password: <strong>Welcome@123</strong>. They will be prompted to change it on their first login.</p>
+                        </div>
                     </div>
 
                     {/* Professional Details */}
@@ -218,7 +226,7 @@ const FacultyForm = () => {
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                                    Designation <span className="text-red-500">*</span>
+                                    Designation
                                 </label>
                                 <select
                                     {...register('designation')}
@@ -239,7 +247,7 @@ const FacultyForm = () => {
 
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                                    Qualification <span className="text-red-500">*</span>
+                                    Qualification
                                 </label>
                                 <input
                                     type="text"
@@ -317,162 +325,183 @@ const FacultyForm = () => {
                         </div>
                     </div>
 
-                    {/* Additional Details */}
-                    <div>
-                        <h2 className="text-lg font-semibold text-gray-900 mb-4">Additional Details</h2>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">
-                                    Specialization
-                                </label>
-                                <input
-                                    type="text"
-                                    {...register('specialization')}
-                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
-                                    placeholder="Area of expertise"
-                                />
-                            </div>
-
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">
-                                    Cabin Number
-                                </label>
-                                <input
-                                    type="text"
-                                    {...register('cabinNumber')}
-                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
-                                    placeholder="e.g., A-101"
-                                />
-                            </div>
-
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">
-                                    Office Phone
-                                </label>
-                                <input
-                                    type="text"
-                                    {...register('officePhone')}
-                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
-                                    placeholder="Office phone number"
-                                />
-                            </div>
-
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">
-                                    Blood Group
-                                </label>
-                                <select
-                                    {...register('bloodGroup')}
-                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
-                                >
-                                    <option value="">Select Blood Group</option>
-                                    <option value="A+">A+</option>
-                                    <option value="A-">A-</option>
-                                    <option value="B+">B+</option>
-                                    <option value="B-">B-</option>
-                                    <option value="O+">O+</option>
-                                    <option value="O-">O-</option>
-                                    <option value="AB+">AB+</option>
-                                    <option value="AB-">AB-</option>
-                                </select>
-                            </div>
-
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">
-                                    Date of Birth
-                                </label>
-                                <input
-                                    type="date"
-                                    {...register('dateOfBirth')}
-                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
-                                />
-                            </div>
-
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">
-                                    Max Mentees
-                                </label>
-                                <input
-                                    type="number"
-                                    {...register('maxMentees')}
-                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
-                                    placeholder="Default: 20"
-                                />
-                            </div>
-                        </div>
-
-                        <div className="mt-4">
-                            <label className="block text-sm font-medium text-gray-700 mb-2">
-                                Address
-                            </label>
-                            <textarea
-                                {...register('address')}
-                                rows="3"
-                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
-                                placeholder="Residential address"
-                            />
-                        </div>
-
-                        <div className="mt-4 grid grid-cols-1 md:grid-cols-3 gap-4">
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">
-                                    City
-                                </label>
-                                <input
-                                    type="text"
-                                    {...register('city')}
-                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
-                                />
-                            </div>
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">
-                                    State
-                                </label>
-                                <input
-                                    type="text"
-                                    {...register('state')}
-                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
-                                />
-                            </div>
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">
-                                    Pincode
-                                </label>
-                                <input
-                                    type="text"
-                                    {...register('pincode')}
-                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
-                                />
-                            </div>
-                        </div>
+                    {/* Advanced Details Toggle */}
+                    <div className="pt-2">
+                        <button
+                            type="button"
+                            onClick={() => setShowAdvanced(!showAdvanced)}
+                            className="flex items-center text-primary-600 font-medium hover:text-primary-700 transition-colors focus:outline-none"
+                        >
+                            {showAdvanced ? <FiChevronUp className="mr-1" /> : <FiChevronDown className="mr-1" />}
+                            {showAdvanced ? 'Hide Additional Details' : 'Show Additional Details (Optional)'}
+                        </button>
                     </div>
 
-                    {/* Emergency Contact */}
-                    <div>
-                        <h2 className="text-lg font-semibold text-gray-900 mb-4">Emergency Contact</h2>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">
-                                    Contact Name
-                                </label>
-                                <input
-                                    type="text"
-                                    {...register('emergencyContactName')}
-                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
-                                />
+                    <AnimatePresence>
+                    {showAdvanced && (
+                        <motion.div
+                            initial={{ opacity: 0, height: 0 }}
+                            animate={{ opacity: 1, height: 'auto' }}
+                            exit={{ opacity: 0, height: 0 }}
+                            className="space-y-6 overflow-hidden"
+                        >
+                            <div className="pt-6 border-t border-gray-100">
+                                <h2 className="text-lg font-semibold text-gray-900 mb-4">Additional Details</h2>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                                            Specialization
+                                        </label>
+                                        <input
+                                            type="text"
+                                            {...register('specialization')}
+                                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                                            placeholder="Area of expertise"
+                                        />
+                                    </div>
+
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                                            Cabin Number
+                                        </label>
+                                        <input
+                                            type="text"
+                                            {...register('cabinNumber')}
+                                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                                            placeholder="e.g., A-101"
+                                        />
+                                    </div>
+
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                                            Office Phone
+                                        </label>
+                                        <input
+                                            type="text"
+                                            {...register('officePhone')}
+                                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                                            placeholder="Office phone number"
+                                        />
+                                    </div>
+
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                                            Blood Group
+                                        </label>
+                                        <select
+                                            {...register('bloodGroup')}
+                                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                                        >
+                                            <option value="">Select Blood Group</option>
+                                            <option value="A+">A+</option>
+                                            <option value="A-">A-</option>
+                                            <option value="B+">B+</option>
+                                            <option value="B-">B-</option>
+                                            <option value="O+">O+</option>
+                                            <option value="O-">O-</option>
+                                            <option value="AB+">AB+</option>
+                                            <option value="AB-">AB-</option>
+                                        </select>
+                                    </div>
+
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                                            Date of Birth
+                                        </label>
+                                        <input
+                                            type="date"
+                                            {...register('dateOfBirth')}
+                                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                                        />
+                                    </div>
+
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                                            Max Mentees
+                                        </label>
+                                        <input
+                                            type="number"
+                                            {...register('maxMentees')}
+                                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                                            placeholder="Default: 20"
+                                        />
+                                    </div>
+                                </div>
+
+                                <div className="mt-4">
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                                        Address
+                                    </label>
+                                    <textarea
+                                        {...register('address')}
+                                        rows="3"
+                                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                                        placeholder="Residential address"
+                                    />
+                                </div>
+
+                                <div className="mt-4 grid grid-cols-1 md:grid-cols-3 gap-4">
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                                            City
+                                        </label>
+                                        <input
+                                            type="text"
+                                            {...register('city')}
+                                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                                            State
+                                        </label>
+                                        <input
+                                            type="text"
+                                            {...register('state')}
+                                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                                            Pincode
+                                        </label>
+                                        <input
+                                            type="text"
+                                            {...register('pincode')}
+                                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                                        />
+                                    </div>
+                                </div>
                             </div>
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">
-                                    Contact Phone
-                                </label>
-                                <input
-                                    type="text"
-                                    {...register('emergencyContactPhone')}
-                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
-                                />
+
+                            <div className="pt-6 border-t border-gray-100">
+                                <h2 className="text-lg font-semibold text-gray-900 mb-4">Emergency Contact</h2>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                                            Contact Name
+                                        </label>
+                                        <input
+                                            type="text"
+                                            {...register('emergencyContactName')}
+                                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                                            Contact Phone
+                                        </label>
+                                        <input
+                                            type="text"
+                                            {...register('emergencyContactPhone')}
+                                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                                        />
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-                    </div>
+                        </motion.div>
+                    )}
+                    </AnimatePresence>
 
                     {/* Form Actions */}
                     <div className="flex flex-col sm:flex-row gap-3 pt-4 border-t">
