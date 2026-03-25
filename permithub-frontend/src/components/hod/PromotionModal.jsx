@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FiX, FiUsers, FiAlertCircle } from 'react-icons/fi';
+import { FiX, FiAlertCircle } from 'react-icons/fi';
 import { promotionSchema } from '../../utils/validators';
 
 const PromotionModal = ({ isOpen, onClose, semesters, onPromote, loading }) => {

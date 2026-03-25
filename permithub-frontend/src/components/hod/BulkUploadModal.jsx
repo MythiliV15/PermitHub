@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { FiUpload, FiDownload, FiX, FiCheckCircle, FiAlertCircle } from 'react-icons/fi';
 import { useDropzone } from 'react-dropzone';
 import { excelUtils } from '../../utils/excelUtils';
@@ -64,8 +64,8 @@ const BulkUploadModal = ({ isOpen, onClose, type, onUpload, onDownloadTemplate }
             clearInterval(interval);
             setUploadProgress(100);
             
-            if (response && response.data) {
-                setUploadResults(response.data);
+            if (response && (response.status || response.totalRecords !== undefined)) {
+                setUploadResults(response);
             } else {
                 // If SUCCESS status was returned directly
                 setUploadResults({ status: 'SUCCESS', successfulRecords: 1 });
@@ -299,6 +299,9 @@ const BulkUploadModal = ({ isOpen, onClose, type, onUpload, onDownloadTemplate }
                                             Upload Result: {uploadResults.status.replace('_', ' ')}
                                         </h3>
                                         <p className="text-xs text-gray-500 font-medium">Processed {uploadResults.totalRecords} records</p>
+                                        {uploadResults.message && (
+                                            <p className="text-xs text-gray-700 font-medium mt-1">{uploadResults.message}</p>
+                                        )}
                                     </div>
                                 </div>
                                 <div className="grid grid-cols-2 gap-4">

@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { motion, AnimatePresence } from 'framer-motion';
+import { AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { FiPlus, FiUpload, FiDownload } from 'react-icons/fi';
 import FacultyTable from '../../components/hod/FacultyTable';
@@ -46,8 +46,11 @@ const FacultyManagement = () => {
     const [uploadType, setUploadType] = useState('faculty');
 
     const loadFaculty = useCallback(() => {
+        const cleanFilters = Object.fromEntries(
+            Object.entries(filters).filter(([, value]) => value !== '' && value !== null && value !== undefined)
+        );
         dispatch(fetchAllFaculty({
-            ...filters,
+            ...cleanFilters,
             page,
             size,
             sortBy: 'id',
@@ -130,21 +133,20 @@ const FacultyManagement = () => {
     const handleBulkUpload = async (file) => {
         const toastId = showLoading('Uploading faculty data...');
         try {
-            const response = await uploadService.uploadFaculty(file, 1);
+            const response = await uploadService.uploadFaculty(file);
             dismiss(toastId);
-            if (response.data.status === 'SUCCESS' || response.data.status === 'PARTIAL_SUCCESS') {
-                if (response.data.status === 'SUCCESS') {
-                    showSuccess(`Successfully uploaded ${response.data.successfulRecords} faculty members`);
-                }
+            const result = response?.data;
+            if (result?.status === 'SUCCESS' || result?.status === 'PARTIAL_SUCCESS') {
+                showSuccess(result?.message || `Successfully uploaded ${result?.successfulRecords || 0} faculty members`);
                 loadFaculty();
-                return response;
-            } else {
-                showError(response.data.message || 'Upload failed');
-                return response;
+                return result;
             }
+
+            showError(result?.message || 'Upload failed');
+            return result;
         } catch (error) {
             dismiss(toastId);
-            showError(error.message || 'Upload failed');
+            showError(error?.response?.data?.message || error.message || 'Upload failed');
             throw error;
         }
     };

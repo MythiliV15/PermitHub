@@ -1,17 +1,45 @@
 package com.permithub.entity;
 
-public enum LeaveCategory {
-    SICK("Sick Leave"),
-    EMERGENCY("Emergency Leave"),
-    OTHER("Other Leave");
+import jakarta.persistence.*;
+import lombok.*;
+import java.time.LocalDateTime;
+
+@Entity
+@Table(name = "leave_categories")
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+public class LeaveCategory {
     
-    private final String displayName;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
     
-    LeaveCategory(String displayName) {
-        this.displayName = displayName;
-    }
+    @Column(name = "departmentId", nullable = false)
+    private Long departmentId;
     
-    public String getDisplayName() {
-        return displayName;
-    }
+    @Column(name = "categoryName", length = 50, nullable = false)
+    private String categoryName;
+    
+    @Column(name = "maxDays")
+    @Builder.Default
+    private Integer maxDays = 5;
+    
+    @Column(name = "requiresAttachment")
+    @Builder.Default
+    private Boolean requiresAttachment = false;
+    
+    @Column(name = "isAutoApprove")
+    @Builder.Default
+    private Boolean isAutoApprove = false;
+    
+    @Column(name = "isActive")
+    @Builder.Default
+    private Boolean isActive = true;
+    
+    @Column(name = "createdAt")
+    @Builder.Default
+    private LocalDateTime createdAt = LocalDateTime.now();
 }

@@ -1,7 +1,6 @@
 package com.permithub.service;
 
 import com.permithub.entity.User;
-import com.permithub.exception.ResourceNotFoundException;
 import com.permithub.repository.UserRepository;
 import com.permithub.security.CustomUserDetails;
 import lombok.RequiredArgsConstructor;

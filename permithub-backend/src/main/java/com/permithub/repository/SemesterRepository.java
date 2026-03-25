@@ -18,30 +18,8 @@ public interface SemesterRepository extends JpaRepository<Semester, Long> {
     
     Optional<Semester> findByDepartmentIdAndIsActiveTrue(Long departmentId);
     
-    @Query("SELECT s FROM Semester s WHERE s.department.id = :deptId AND s.isActive = true")
-    Optional<Semester> findActiveSemesterByDepartment(@Param("deptId") Long deptId);
-    
     @Modifying
     @Transactional
-    @Query("UPDATE Semester s SET s.isActive = false WHERE s.department.id = :deptId")
+    @Query("UPDATE Semester s SET s.isActive = false WHERE s.departmentId = :deptId")
     void deactivateAllByDepartment(@Param("deptId") Long deptId);
-    
-    List<Semester> findByYear(Integer year);
-    
-    // New methods for Phase 2
-    
-    @Query("SELECT s FROM Semester s WHERE s.department.id = :deptId ORDER BY s.year DESC, s.semesterNumber DESC")
-    List<Semester> findByDepartmentOrderByRecent(@Param("deptId") Long deptId);
-    
-    @Query("SELECT s FROM Semester s WHERE s.department.id = :deptId AND s.isRegistrationOpen = true")
-    Optional<Semester> findSemesterWithOpenRegistration(@Param("deptId") Long deptId);
-    
-    @Query("SELECT COUNT(s) > 0 FROM Semester s WHERE s.department.id = :deptId AND s.isActive = true")
-    boolean hasActiveSemester(@Param("deptId") Long deptId);
-    
-    @Query("SELECT s FROM Semester s WHERE s.department.id = :deptId AND s.semesterNumber = :semesterNumber AND s.year = :year")
-    Optional<Semester> findByDepartmentAndSemesterNumber(
-            @Param("deptId") Long deptId, 
-            @Param("semesterNumber") Integer semesterNumber,
-            @Param("year") Integer year);
 }

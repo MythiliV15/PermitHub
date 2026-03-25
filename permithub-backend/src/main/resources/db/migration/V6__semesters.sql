@@ -1,0 +1,22 @@
+CREATE TABLE semesters (
+    id            BIGINT AUTO_INCREMENT PRIMARY KEY,
+    departmentId  BIGINT       NOT NULL REFERENCES departments(id),
+    name          VARCHAR(100) NOT NULL,
+    year          INT,
+    semesterNumber INT,
+    academicYear  VARCHAR(20)  NOT NULL,
+    startDate     DATE         NOT NULL,
+    endDate       DATE         NOT NULL,
+    registrationStartDate DATE,
+    registrationEndDate DATE,
+    examStartDate DATE,
+    examEndDate DATE,
+    resultDate DATE,
+    semesterType VARCHAR(20),
+    defaultLeaveBalance INT    NOT NULL DEFAULT 20,
+    isActive      BOOLEAN      NOT NULL DEFAULT FALSE,
+    createdAt     DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updatedAt     DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    INDEX idx_sem_dept    (departmentId),
+    INDEX idx_sem_active  (departmentId, isActive)
+);

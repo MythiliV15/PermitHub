@@ -1,10 +1,15 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FiX, FiUser } from 'react-icons/fi';
 
 const RoleAssignmentModal = ({ isOpen, onClose, faculty, onAssign, loading }) => {
     const [selectedRoles, setSelectedRoles] = useState(faculty?.roles || []);
     const [remarks, setRemarks] = useState('');
+
+    useEffect(() => {
+        setSelectedRoles(faculty?.roles || []);
+        setRemarks('');
+    }, [faculty, isOpen]);
 
     const roleOptions = [
         { value: 'FACULTY_MENTOR', label: 'Mentor', description: 'Can mentor students and approve requests' },

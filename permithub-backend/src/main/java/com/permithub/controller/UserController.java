@@ -25,32 +25,32 @@ public class UserController {
     private final AuthService authService;
 
     @PostMapping("/{id}/change-password")
-    @PreAuthorize("hasAnyRole('HOD', 'PRINCIPAL', 'AO') or @userSecurity.isCurrentUser(#id)")
+    @PreAuthorize("hasAnyAuthority('ROLE_HOD', 'ROLE_PRINCIPAL', 'ROLE_AO') or @userSecurity.isCurrentUser(#id)")
     public ResponseEntity<ApiResponse<Void>> changePassword(
             @PathVariable Long id,
             @Valid @RequestBody ChangePasswordRequest request) {
         
-        authService.changePassword(id, request.getOldPassword(), request.getNewPassword());
+        authService.changePassword(id, request.getCurrentPassword(), request.getNewPassword());
         
         return ResponseEntity.ok(ApiResponse.success("Password changed successfully"));
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasAnyRole('HOD', 'PRINCIPAL', 'AO')")
+    @PreAuthorize("hasAnyAuthority('ROLE_HOD', 'ROLE_PRINCIPAL', 'ROLE_AO')")
     public ResponseEntity<ApiResponse<UserResponse>> getUserById(@PathVariable Long id) {
         UserResponse user = userService.getUserById(id);
         return ResponseEntity.ok(ApiResponse.success("User found", user));
     }
 
     @GetMapping("/email/{email}")
-    @PreAuthorize("hasAnyRole('HOD', 'PRINCIPAL', 'AO')")
+    @PreAuthorize("hasAnyAuthority('ROLE_HOD', 'ROLE_PRINCIPAL', 'ROLE_AO')")
     public ResponseEntity<ApiResponse<UserResponse>> getUserByEmail(@PathVariable String email) {
         UserResponse user = userService.getUserByEmail(email);
         return ResponseEntity.ok(ApiResponse.success("User found", user));
     }
 
     @GetMapping
-    @PreAuthorize("hasAnyRole('HOD', 'PRINCIPAL', 'AO')")
+    @PreAuthorize("hasAnyAuthority('ROLE_HOD', 'ROLE_PRINCIPAL', 'ROLE_AO')")
     public ResponseEntity<ApiResponse<Page<UserResponse>>> getAllUsers(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
@@ -66,7 +66,7 @@ public class UserController {
     }
 
     @GetMapping("/active")
-    @PreAuthorize("hasAnyRole('HOD', 'PRINCIPAL', 'AO')")
+    @PreAuthorize("hasAnyAuthority('ROLE_HOD', 'ROLE_PRINCIPAL', 'ROLE_AO')")
     public ResponseEntity<ApiResponse<?>> getAllActiveUsers() {
         return ResponseEntity.ok(ApiResponse.success(
             "Active users retrieved", 
@@ -75,7 +75,7 @@ public class UserController {
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasAnyRole('HOD', 'PRINCIPAL', 'AO') or @userSecurity.isCurrentUser(#id)")
+    @PreAuthorize("hasAnyAuthority('ROLE_HOD', 'ROLE_PRINCIPAL', 'ROLE_AO') or @userSecurity.isCurrentUser(#id)")
     public ResponseEntity<ApiResponse<UserResponse>> updateUser(
             @PathVariable Long id,
             @Valid @RequestBody User userDetails) {
@@ -84,21 +84,21 @@ public class UserController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('HOD')")
+    @PreAuthorize("hasAuthority('ROLE_HOD')")
     public ResponseEntity<ApiResponse<Void>> deleteUser(@PathVariable Long id) {
         userService.deleteUser(id);
         return ResponseEntity.ok(ApiResponse.success("User deleted successfully"));
     }
 
     @PatchMapping("/{id}/deactivate")
-    @PreAuthorize("hasRole('HOD')")
+    @PreAuthorize("hasAuthority('ROLE_HOD')")
     public ResponseEntity<ApiResponse<Void>> deactivateUser(@PathVariable Long id) {
         userService.deactivateUser(id);
         return ResponseEntity.ok(ApiResponse.success("User deactivated successfully"));
     }
 
     @PatchMapping("/{id}/activate")
-    @PreAuthorize("hasRole('HOD')")
+    @PreAuthorize("hasAuthority('ROLE_HOD')")
     public ResponseEntity<ApiResponse<Void>> activateUser(@PathVariable Long id) {
         userService.activateUser(id);
         return ResponseEntity.ok(ApiResponse.success("User activated successfully"));

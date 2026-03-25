@@ -3,7 +3,6 @@ package com.permithub.service;
 import com.permithub.dto.mapper.UserMapper;
 import com.permithub.dto.response.UserResponse;
 import com.permithub.entity.User;
-import com.permithub.exception.BadRequestException;
 import com.permithub.exception.ResourceNotFoundException;
 import com.permithub.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -61,9 +60,10 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() -> new ResourceNotFoundException("User", "id", id));
 
         // Update fields (but not password, roles, or email)
-        existingUser.setFullName(userDetails.getFullName());
-        existingUser.setPhoneNumber(userDetails.getPhoneNumber());
-        existingUser.setProfilePicture(userDetails.getProfilePicture());
+        // Profile details are in StudentProfile or FacultyProfile
+        existingUser.setHostelType(userDetails.getHostelType());
+        existingUser.setIsActive(userDetails.getIsActive());
+        existingUser.setDepartmentId(userDetails.getDepartmentId());
 
         User updatedUser = userRepository.save(existingUser);
         log.info("User updated: {}", updatedUser.getEmail());
@@ -117,7 +117,7 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() -> new ResourceNotFoundException("User", "id", userId));
         
         user.setPassword(passwordEncoder.encode(newPassword));
-        user.setIsFirstLogin(false);
+        user.setFirstLogin(false);
         userRepository.save(user);
         log.info("Password force changed for user: {}", user.getEmail());
     }

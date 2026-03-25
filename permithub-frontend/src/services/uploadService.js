@@ -2,10 +2,9 @@ import axiosInstance from '../api/axiosConfig';
 
 const uploadService = {
     // Upload faculty via Excel
-    uploadFaculty: async (file, departmentId, onUploadProgress) => {
+    uploadFaculty: async (file, onUploadProgress) => {
         const formData = new FormData();
         formData.append('file', file);
-        formData.append('departmentId', departmentId);
 
         const response = await axiosInstance.post('/hod/upload/faculty', formData, {
             headers: {
@@ -17,10 +16,9 @@ const uploadService = {
     },
 
     // Upload students via Excel
-    uploadStudents: async (file, departmentId, year, section, onUploadProgress) => {
+    uploadStudents: async (file, year, section, onUploadProgress) => {
         const formData = new FormData();
         formData.append('file', file);
-        formData.append('departmentId', departmentId);
         formData.append('year', year);
         formData.append('section', section);
 

@@ -15,13 +15,11 @@ public class UserMapper {
         return UserResponse.builder()
                 .id(user.getId())
                 .email(user.getEmail())
-                .fullName(user.getFullName())
-                .phoneNumber(user.getPhoneNumber())
-                .profilePicture(user.getProfilePicture())
-                .roles(user.getRoles())
-                .isFirstLogin(user.getIsFirstLogin())
-                .lastLoginAt(user.getLastLoginAt())
-                .emailVerified(user.getEmailVerified())
+                .role(user.getRole())
+                .departmentId(user.getDepartmentId())
+                .hostelType(user.getHostelType())
+                .isFirstLogin(user.getFirstLogin())
+                .isActive(user.getIsActive())
                 .createdAt(user.getCreatedAt())
                 .build();
     }

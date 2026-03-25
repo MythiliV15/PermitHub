@@ -1,0 +1,28 @@
+-- V17: bulk_upload_history
+CREATE TABLE IF NOT EXISTS bulk_upload_history (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    uploadType VARCHAR(50) NOT NULL,
+    fileName VARCHAR(255) NOT NULL,
+    filePath VARCHAR(500),
+    uploadedBy BIGINT NOT NULL,
+    departmentId BIGINT,
+    uploadedDate DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    totalRecords INT NOT NULL,
+    successfulRecords INT NOT NULL,
+    failedRecords INT NOT NULL,
+    errorLog TEXT,
+    status VARCHAR(20) NOT NULL,
+    processingTimeMs BIGINT,
+    startTime DATETIME,
+    endTime DATETIME,
+    defaultPasswordUsed VARCHAR(255),
+    passwordResetRequired BOOLEAN DEFAULT TRUE,
+    fileSizeBytes BIGINT,
+    originalFilename VARCHAR(255),
+    contentType VARCHAR(100),
+    uploadIp VARCHAR(50),
+    createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updatedAt DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (uploadedBy) REFERENCES users(id),
+    FOREIGN KEY (departmentId) REFERENCES departments(id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

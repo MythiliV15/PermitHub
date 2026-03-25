@@ -1,15 +1,13 @@
 package com.permithub.security;
 
 import com.permithub.entity.User;
-import com.permithub.entity.Role;
 import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
-import java.util.Set;
-import java.util.stream.Collectors;
+import java.util.List;
 
 @Getter
 public class CustomUserDetails implements UserDetails {
@@ -19,9 +17,7 @@ public class CustomUserDetails implements UserDetails {
 
     public CustomUserDetails(User user) {
         this.user = user;
-        this.authorities = user.getRoles().stream()
-                .map(role -> new SimpleGrantedAuthority("ROLE_" + role.name()))
-                .collect(Collectors.toList());
+        this.authorities = List.of(new SimpleGrantedAuthority("ROLE_" + user.getRole()));
     }
 
     @Override
@@ -59,15 +55,19 @@ public class CustomUserDetails implements UserDetails {
         return user.getIsActive();
     }
 
-    public Set<Role> getRoles() {
-        return user.getRoles();
+    public String getRole() {
+        return user.getRole();
     }
 
     public Long getId() {
         return user.getId();
     }
 
+    public Long getDepartmentId() {
+        return user.getDepartmentId();
+    }
+
     public Boolean getIsFirstLogin() {
-        return user.getIsFirstLogin();
+        return user.getFirstLogin();
     }
 }

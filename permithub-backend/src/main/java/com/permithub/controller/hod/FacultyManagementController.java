@@ -1,14 +1,14 @@
 package com.permithub.controller.hod;
 
-import com.permithub.dto.hod.FacultyRequestDTO;
-import com.permithub.dto.hod.FacultyResponseDTO;
-import com.permithub.dto.hod.BulkUploadResponseDTO;
+import com.permithub.dto.hod.*;
 import com.permithub.dto.response.ApiResponse;
-import com.permithub.entity.Role;
-import com.permithub.security.CustomUserDetails;
 import com.permithub.service.hod.FacultyManagementService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -17,36 +17,34 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 @RestController
 @RequestMapping("/hod/faculty")
 @RequiredArgsConstructor
-@PreAuthorize("hasRole('HOD')")
+@PreAuthorize("hasAuthority('ROLE_HOD')")
 public class FacultyManagementController {
 
     private final FacultyManagementService facultyService;
 
     @PostMapping
     public ResponseEntity<ApiResponse<FacultyResponseDTO>> addFaculty(
-            @AuthenticationPrincipal CustomUserDetails currentUser,
             @Valid @RequestBody FacultyRequestDTO request) {
-        
-        FacultyResponseDTO response = facultyService.addFaculty(currentUser.getId(), request);
+        FacultyResponseDTO response = facultyService.addFaculty(request);
         return ResponseEntity.ok(ApiResponse.success("Faculty added successfully", response));
     }
 
     @GetMapping
     public ResponseEntity<ApiResponse<Page<FacultyResponseDTO>>> getAllFaculty(
-            @AuthenticationPrincipal CustomUserDetails currentUser,
             @RequestParam(required = false) String search,
             @RequestParam(required = false) String designation,
-            @RequestParam(required = false) Role role,
-            @RequestParam(required = false) Boolean isActive,
+            @RequestParam(required = false) String role,
+            @RequestParam(required = false) String isActive,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "id") String sortBy,
@@ -55,82 +53,77 @@ public class FacultyManagementController {
         Sort sort = direction.equalsIgnoreCase("desc") ? 
                     Sort.by(sortBy).descending() : Sort.by(sortBy).ascending();
         Pageable pageable = PageRequest.of(page, size, sort);
+
+        Boolean isActiveFilter = null;
+        if (isActive != null && !isActive.isBlank()) {
+            isActiveFilter = Boolean.parseBoolean(isActive);
+        }
         
-        Page<FacultyResponseDTO> faculty = facultyService.getAllFaculty(
-                currentUser.getId(), search, designation, role, isActive, pageable);
-        
+        Page<FacultyResponseDTO> faculty = facultyService.getAllFaculty(search, designation, role, isActiveFilter, pageable);
         return ResponseEntity.ok(ApiResponse.success("Faculty retrieved successfully", faculty));
     }
 
     @GetMapping("/{facultyId}")
-    public ResponseEntity<ApiResponse<FacultyResponseDTO>> getFacultyById(
-            @AuthenticationPrincipal CustomUserDetails currentUser,
-            @PathVariable Long facultyId) {
-        
-        FacultyResponseDTO faculty = facultyService.getFacultyById(currentUser.getId(), facultyId);
+    public ResponseEntity<ApiResponse<FacultyResponseDTO>> getFacultyById(@PathVariable Long facultyId) {
+        FacultyResponseDTO faculty = facultyService.getFacultyById(facultyId);
         return ResponseEntity.ok(ApiResponse.success("Faculty details retrieved successfully", faculty));
     }
 
     @PutMapping("/{facultyId}")
     public ResponseEntity<ApiResponse<FacultyResponseDTO>> updateFaculty(
-            @AuthenticationPrincipal CustomUserDetails currentUser,
             @PathVariable Long facultyId,
             @Valid @RequestBody FacultyRequestDTO request) {
-        
-        FacultyResponseDTO faculty = facultyService.updateFaculty(currentUser.getId(), facultyId, request);
+        FacultyResponseDTO faculty = facultyService.updateFaculty(facultyId, request);
         return ResponseEntity.ok(ApiResponse.success("Faculty updated successfully", faculty));
     }
 
     @PatchMapping("/{facultyId}/deactivate")
-    public ResponseEntity<ApiResponse<Void>> deactivateFaculty(
-            @AuthenticationPrincipal CustomUserDetails currentUser,
-            @PathVariable Long facultyId,
-            @RequestParam(required = false) String reason) {
-        
-        facultyService.deactivateFaculty(currentUser.getId(), facultyId, reason);
+    public ResponseEntity<ApiResponse<Void>> deactivateFaculty(@PathVariable Long facultyId) {
+        facultyService.deactivateFaculty(facultyId);
         return ResponseEntity.ok(ApiResponse.success("Faculty deactivated successfully"));
     }
 
     @PatchMapping("/{facultyId}/activate")
-    public ResponseEntity<ApiResponse<Void>> activateFaculty(
-            @AuthenticationPrincipal CustomUserDetails currentUser,
-            @PathVariable Long facultyId) {
-        
-        facultyService.activateFaculty(currentUser.getId(), facultyId);
+    public ResponseEntity<ApiResponse<Void>> activateFaculty(@PathVariable Long facultyId) {
+        facultyService.activateFaculty(facultyId);
         return ResponseEntity.ok(ApiResponse.success("Faculty activated successfully"));
     }
 
     @PostMapping("/{facultyId}/roles")
     public ResponseEntity<ApiResponse<FacultyResponseDTO>> assignRoles(
-            @AuthenticationPrincipal CustomUserDetails currentUser,
             @PathVariable Long facultyId,
-            @RequestBody Set<Role> roles) {
-        
-        FacultyResponseDTO faculty = facultyService.assignRoles(currentUser.getId(), facultyId, roles);
+            @RequestBody List<FacultyRoleAssignmentDTO> roles) {
+        FacultyResponseDTO faculty = facultyService.assignRoles(facultyId, roles);
         return ResponseEntity.ok(ApiResponse.success("Roles assigned successfully", faculty));
     }
 
     @GetMapping("/stats")
-    public ResponseEntity<ApiResponse<Map<String, Object>>> getFacultyStatistics(
-            @AuthenticationPrincipal CustomUserDetails currentUser) {
-        
-        Map<String, Object> stats = facultyService.getFacultyStatistics(currentUser.getId());
+    public ResponseEntity<ApiResponse<Map<String, Object>>> getFacultyStatistics() {
+        Map<String, Object> stats = facultyService.getFacultyStatistics();
         return ResponseEntity.ok(ApiResponse.success("Faculty statistics retrieved successfully", stats));
     }
 
-    @GetMapping("/check/employee/{employeeId}")
-    public ResponseEntity<ApiResponse<Boolean>> checkEmployeeId(
-            @PathVariable String employeeId) {
+    @GetMapping("/template")
+    @PreAuthorize("hasRole('HOD')")
+    public ResponseEntity<byte[]> downloadFacultyTemplate() throws IOException {
+        Workbook workbook = new XSSFWorkbook();
+        Sheet sheet = workbook.createSheet("Faculty Template");
+        Row header = sheet.createRow(0);
+        String[] cols = {"name", "email", "phone", "designation", "employeeId"};
+        for (int i = 0; i < cols.length; i++) header.createCell(i).setCellValue(cols[i]);
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        workbook.write(out);
+        workbook.close();
         
-        boolean exists = facultyService.isEmployeeIdExists(employeeId);
-        return ResponseEntity.ok(ApiResponse.success("Employee ID check completed", exists));
-    }
-
-    @GetMapping("/check/email/{email}")
-    public ResponseEntity<ApiResponse<Boolean>> checkEmail(
-            @PathVariable String email) {
+        byte[] content = out.toByteArray();
         
-        boolean exists = facultyService.isEmailExists(email);
-        return ResponseEntity.ok(ApiResponse.success("Email check completed", exists));
+        return ResponseEntity.ok()
+          .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=faculty_upload_template.xlsx")
+          .header(HttpHeaders.CACHE_CONTROL, "no-cache, no-store, must-revalidate")
+          .header(HttpHeaders.PRAGMA, "no-cache")
+          .header(HttpHeaders.EXPIRES, "0")
+          .contentType(MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"))
+          .contentLength(content.length)
+          .body(content);
     }
 }

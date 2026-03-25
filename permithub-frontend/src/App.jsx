@@ -16,6 +16,7 @@ import BulkUpload from './pages/hod/BulkUpload';
 import SemesterManagement from './pages/hod/SemesterManagement';
 import SemesterForm from './pages/hod/SemesterForm';
 import StudentPromotion from './pages/hod/StudentPromotion';
+import StudentManagement from './pages/hod/StudentManagement';
 import HODApprovals from './pages/hod/HODApprovals';
 import ApprovalHistory from './pages/hod/ApprovalHistory';
 import HODProfile from './pages/hod/HODProfile';
@@ -115,6 +116,12 @@ function App() {
         <Route path="/hod/semester/promotion" element={
           <PrivateRoute>
             <StudentPromotion />
+          </PrivateRoute>
+        } />
+
+        <Route path="/hod/students" element={
+          <PrivateRoute>
+            <StudentManagement />
           </PrivateRoute>
         } />
         

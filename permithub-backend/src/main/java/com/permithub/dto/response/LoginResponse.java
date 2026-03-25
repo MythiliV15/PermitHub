@@ -1,12 +1,10 @@
 package com.permithub.dto.response;
 
-import com.permithub.entity.Role;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.util.Set;
+import java.util.List;
 
 @Data
 @Builder
@@ -19,7 +17,8 @@ public class LoginResponse {
     private Long id;
     private String email;
     private String fullName;
-    private Set<Role> roles;
+    private List<String> roles;
+    private Long departmentId;
+    private String hostelType;
     private Boolean isFirstLogin;
-    private String message;
 }

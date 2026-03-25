@@ -1,8 +1,8 @@
 package com.permithub.controller.hod;
 
 import com.permithub.dto.response.ApiResponse;
-import com.permithub.entity.HOD;
-import com.permithub.repository.HODRepository;
+import com.permithub.entity.FacultyProfile;
+import com.permithub.repository.FacultyProfileRepository;
 import com.permithub.security.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -13,40 +13,35 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/hod/profile")
 @RequiredArgsConstructor
-@PreAuthorize("hasRole('HOD')")
+@PreAuthorize("hasAuthority('ROLE_HOD')")
 public class HODProfileController {
 
-    private final HODRepository hodRepository;
+    private final FacultyProfileRepository facultyProfileRepository;
 
     @GetMapping
-    public ResponseEntity<ApiResponse<HOD>> getProfile(
+    public ResponseEntity<ApiResponse<FacultyProfile>> getProfile(
             @AuthenticationPrincipal CustomUserDetails currentUser) {
         
-        HOD hod = hodRepository.findById(currentUser.getId())
+        FacultyProfile hod = facultyProfileRepository.findByUserId(currentUser.getId())
                 .orElseThrow(() -> new RuntimeException("HOD profile not found"));
         
         return ResponseEntity.ok(ApiResponse.success("HOD profile retrieved successfully", hod));
     }
 
     @PutMapping
-    public ResponseEntity<ApiResponse<HOD>> updateProfile(
+    public ResponseEntity<ApiResponse<FacultyProfile>> updateProfile(
             @AuthenticationPrincipal CustomUserDetails currentUser,
-            @RequestBody HOD profileUpdate) {
+            @RequestBody FacultyProfile profileUpdate) {
         
-        HOD existingHOD = hodRepository.findById(currentUser.getId())
+        FacultyProfile existingHOD = facultyProfileRepository.findByUserId(currentUser.getId())
                 .orElseThrow(() -> new RuntimeException("HOD profile not found"));
         
-        // Update fields
-        existingHOD.setFullName(profileUpdate.getFullName());
-        existingHOD.setPhoneNumber(profileUpdate.getPhoneNumber());
-        existingHOD.setOfficeLocation(profileUpdate.getOfficeLocation());
+        // Update fields from the profile update
+        existingHOD.setName(profileUpdate.getName());
+        existingHOD.setPhone(profileUpdate.getPhone());
         existingHOD.setDesignation(profileUpdate.getDesignation());
-        existingHOD.setQualification(profileUpdate.getQualification());
-        existingHOD.setSpecialization(profileUpdate.getSpecialization());
-        existingHOD.setCabinNumber(profileUpdate.getCabinNumber());
-        existingHOD.setOfficePhone(profileUpdate.getOfficePhone());
         
-        HOD updated = hodRepository.save(existingHOD);
+        FacultyProfile updated = facultyProfileRepository.save(existingHOD);
         return ResponseEntity.ok(ApiResponse.success("HOD profile updated successfully", updated));
     }
 }

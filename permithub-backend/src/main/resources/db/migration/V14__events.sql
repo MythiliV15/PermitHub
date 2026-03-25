@@ -1,0 +1,15 @@
+-- V14: events
+CREATE TABLE events (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    departmentId BIGINT NOT NULL,
+    title VARCHAR(150) NOT NULL,
+    description TEXT,
+    startDate DATETIME NOT NULL,
+    endDate DATETIME NOT NULL,
+    location VARCHAR(200),
+    eventType VARCHAR(50), -- ACADEMIC, CULTURAL, PLACEMENT, SPORTS
+    createdBy BIGINT NOT NULL, -- user_id
+    createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updatedAt DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (departmentId) REFERENCES departments(id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

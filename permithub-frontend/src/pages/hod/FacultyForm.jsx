@@ -8,13 +8,13 @@ import { FiSave, FiX, FiUser, FiMail, FiPhone, FiBriefcase, FiCalendar } from 'r
 import { facultySchema } from '../../utils/validators';
 import {
     addFaculty,
+    assignRoles,
     updateFaculty,
     fetchFacultyById,
     selectCurrentFaculty,
     clearCurrentFaculty
 } from '../../store/facultySlice';
 import { useToast } from '../../hooks/useToast';
-import { useAuth } from '../../hooks/useAuth';
 import { FiChevronDown, FiChevronUp, FiInfo } from 'react-icons/fi';
 
 const roleOptions = [
@@ -29,7 +29,6 @@ const FacultyForm = () => {
     const location = useLocation();
     const dispatch = useDispatch();
     const { showSuccess, showError, showLoading, dismiss } = useToast();
-    const { user } = useAuth();
     const currentFaculty = useSelector(selectCurrentFaculty);
     const isEditMode = !!id || location.state?.faculty;
     const [showAdvanced, setShowAdvanced] = useState(false);
@@ -80,9 +79,11 @@ const FacultyForm = () => {
         
         try {
             const facultyData = {
-                ...data,
-                departmentId: user?.departmentId || user?.department?.id, // Ensure departmentId is sent
-                roles: selectedRoles
+                employeeId: data.employeeId,
+                name: data.fullName,
+                email: data.email,
+                phone: data.phoneNumber,
+                designation: data.designation
             };
 
             if (isEditMode) {
@@ -91,9 +92,14 @@ const FacultyForm = () => {
                 dismiss(toastId);
                 showSuccess('Faculty updated successfully');
             } else {
-                await dispatch(addFaculty(facultyData)).unwrap();
+                const addedFaculty = await dispatch(addFaculty(facultyData)).unwrap();
                 dismiss(toastId);
                 showSuccess(`Faculty added successfully. Default password: Welcome@123`);
+
+                if (selectedRoles.length > 0 && addedFaculty?.id) {
+                    const rolePayload = selectedRoles.map((roleName) => ({ roleName }));
+                    await dispatch(assignRoles({ id: addedFaculty.id, roles: rolePayload })).unwrap();
+                }
             }
             navigate('/hod/faculty');
         } catch (error) {

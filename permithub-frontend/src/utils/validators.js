@@ -55,7 +55,7 @@ export const firstLoginSchema = yup.object().shape({
 export const facultySchema = yup.object().shape({
     employeeId: yup.string()
         .required('Employee ID is required')
-        .matches(/^[A-Z0-9]{3,20}$/, 'Employee ID must be 3-20 alphanumeric characters'),
+        .matches(/^[A-Za-z0-9_]{3,20}$/, 'Employee ID must be 3-20 characters (letters, numbers, underscore)'),
     
     fullName: yup.string()
         .required('Full name is required')
@@ -84,9 +84,6 @@ export const facultySchema = yup.object().shape({
     joiningDate: yup.date()
         .typeError('Invalid date')
         .max(new Date(), 'Joining date cannot be in the future'),
-    
-    roles: yup.array()
-        .min(1, 'At least one role must be selected'),
     
     maxMentees: yup.number()
         .typeError('Max mentees must be a number')

@@ -1,13 +1,17 @@
 package com.permithub.service.hod;
-import com.permithub.service.EmailService;
 
 import com.permithub.dto.hod.*;
-import com.permithub.entity.*;
+import com.permithub.entity.FacultyProfile;
+import com.permithub.entity.FacultyRole;
+import com.permithub.entity.User;
 import com.permithub.exception.BadRequestException;
 import com.permithub.exception.ResourceNotFoundException;
-import com.permithub.repository.*;
+import com.permithub.repository.FacultyProfileRepository;
+import com.permithub.repository.FacultyRoleRepository;
+import com.permithub.repository.UserRepository;
+import com.permithub.security.SecurityUtils;
+import com.permithub.service.EmailService;
 import com.permithub.util.ExcelHelper;
-import com.permithub.util.PasswordGenerator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -17,7 +21,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -27,462 +30,226 @@ import java.util.stream.Collectors;
 @Transactional
 public class FacultyManagementServiceImpl implements FacultyManagementService {
 
-    private final FacultyRepository facultyRepository;
-    private final DepartmentRepository departmentRepository;
     private final UserRepository userRepository;
-    private final StudentRepository studentRepository;
+    private final FacultyProfileRepository facultyProfileRepository;
+    private final FacultyRoleRepository facultyRoleRepository;
     private final PasswordEncoder passwordEncoder;
     private final ExcelHelper excelHelper;
-    private final PasswordGenerator passwordGenerator;
     private final EmailService emailService;
 
     private static final String DEFAULT_PASSWORD = "Welcome@123";
-    private static final int DEFAULT_MAX_MENTEES = 20;
 
     @Override
-    public FacultyResponseDTO addFaculty(Long hodId, FacultyRequestDTO request) {
-        log.info("Adding new faculty by HOD ID: {}", hodId);
-        
-        // Validate HOD
-        Faculty hod = getHodFaculty(hodId);
-        
-        // Validate department
-        Department department = departmentRepository.findById(request.getDepartmentId())
-                .orElseThrow(() -> new ResourceNotFoundException("Department not found"));
-        
-        // Check if department belongs to HOD
-        if (!department.getId().equals(hod.getDepartment().getId())) {
-            throw new BadRequestException("You can only add faculty to your own department");
+    public FacultyResponseDTO addFaculty(FacultyRequestDTO request) {
+        Long deptId = SecurityUtils.getCurrentUserDepartmentId();
+        if (deptId == null) {
+            // Fallback: lookup department from HOD's own profile if context is missing
+            deptId = facultyProfileRepository.findByUserId(SecurityUtils.getCurrentUserId())
+                    .map(FacultyProfile::getDepartmentId)
+                    .orElseThrow(() -> new BadRequestException("Could not identify your department. Please re-login."));
         }
-        
-        // Check for existing employee ID
-        if (facultyRepository.existsByEmployeeId(request.getEmployeeId())) {
-            throw new BadRequestException("Employee ID already exists: " + request.getEmployeeId());
-        }
-        
-        // Check for existing email (checking via userRepository which covers all users including students/faculty)
         if (userRepository.existsByEmail(request.getEmail())) {
             throw new BadRequestException("Email already exists: " + request.getEmail());
         }
-        
-        // Create faculty directly (using SuperBuilder which handles User fields)
-        Faculty faculty = Faculty.builder()
+        if (facultyProfileRepository.existsByEmployeeId(request.getEmployeeId())) {
+            throw new BadRequestException("Employee ID already exists: " + request.getEmployeeId());
+        }
+
+        // 1. Create User
+        User user = User.builder()
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(DEFAULT_PASSWORD))
-                .fullName(request.getFullName())
-                .phoneNumber(request.getPhoneNumber())
-                .isFirstLogin(true)
-                .emailVerified(false)
+                .role("FACULTY")
+                .departmentId(deptId)
+                .firstLogin(true)
                 .isActive(true)
-                .roles(request.getRoles() != null ? request.getRoles() : new HashSet<>(Collections.singletonList(Role.FACULTY)))
-                .employeeId(request.getEmployeeId())
-                .department(department)
+                .build();
+        user = userRepository.save(user);
+
+        // 2. Create FacultyProfile
+        FacultyProfile profile = FacultyProfile.builder()
+                .userId(user.getId())
+                .name(request.getName())
+                .phone(request.getPhone())
                 .designation(request.getDesignation())
-                .qualification(request.getQualification())
-                .experienceYears(request.getExperienceYears())
-                .joiningDate(request.getJoiningDate())
-                .isMentor(request.getRoles() != null && request.getRoles().contains(Role.FACULTY_MENTOR))
-                .isClassAdvisor(request.getRoles() != null && request.getRoles().contains(Role.FACULTY_CLASS_ADVISOR))
-                .isEventCoordinator(request.getRoles() != null && request.getRoles().contains(Role.FACULTY_EVENT_COORDINATOR))
-                .maxMentees(request.getMaxMentees() != null ? request.getMaxMentees() : DEFAULT_MAX_MENTEES)
-                .currentMentees(0)
-                .specialization(request.getSpecialization())
-                .cabinNumber(request.getCabinNumber())
-                .officePhone(request.getOfficePhone())
-                .emergencyContactName(request.getEmergencyContactName())
-                .emergencyContactPhone(request.getEmergencyContactPhone())
-                .bloodGroup(request.getBloodGroup())
-                .dateOfBirth(request.getDateOfBirth())
-                .address(request.getAddress())
-                .city(request.getCity())
-                .state(request.getState())
-                .pincode(request.getPincode())
+                .employeeId(request.getEmployeeId())
+                .departmentId(deptId)
                 .build();
-        
-        faculty = facultyRepository.save(faculty);
-        
-        // Update department faculty count
-        department.setTotalFaculty(department.getTotalFaculty() + 1);
-        departmentRepository.save(department);
-        
-        // Send welcome email
+        facultyProfileRepository.save(profile);
+
+        // 3. Send Email
         try {
-            emailService.sendWelcomeEmail(request.getEmail(), request.getFullName(), DEFAULT_PASSWORD);
+            emailService.sendWelcomeEmail(user.getEmail(), profile.getName(), DEFAULT_PASSWORD);
         } catch (Exception e) {
-            log.error("Failed to send welcome email to: {}", request.getEmail(), e);
+            log.error("Email delivery failed for {}: {}", user.getEmail(), e.getMessage());
         }
-        
-        log.info("Faculty added successfully with ID: {}", faculty.getId());
-        
-        return mapToResponseDTO(faculty);
+
+        return mapToResponse(user, profile);
     }
 
     @Override
-    public BulkUploadResponseDTO bulkUploadFaculty(Long hodId, FacultyBulkUploadDTO bulkUploadDTO) {
-        log.info("Processing bulk faculty upload by HOD ID: {}", hodId);
-        
-        Faculty hod = getHodFaculty(hodId);
-        Department department = hod.getDepartment();
-        
-        BulkUploadResponseDTO response = BulkUploadResponseDTO.builder()
-                .uploadType("FACULTY")
-                .fileName(bulkUploadDTO.getFile().getOriginalFilename())
-                .status("PROCESSING")
-                .build();
-        
-        List<BulkUploadResponseDTO.ErrorRecordDTO> errors = new ArrayList<>();
-        List<FacultyResponseDTO> successful = new ArrayList<>();
-        
-        try {
-            // Parse Excel file
-            List<FacultyRequestDTO> facultyList = excelHelper.parseFacultyExcel(
-                    bulkUploadDTO.getFile(), 
-                    department.getId(),
-                    bulkUploadDTO.getDefaultDesignation(),
-                    bulkUploadDTO.getDefaultExperienceYears()
-            );
-            
-            response.setTotalRecords(facultyList.size());
-            
-            int successCount = 0;
-            
-            for (int i = 0; i < facultyList.size(); i++) {
-                FacultyRequestDTO request = facultyList.get(i);
-                try {
-                    // Validate and add faculty
-                    FacultyResponseDTO added = addFaculty(hodId, request);
-                    successful.add(added);
-                    successCount++;
-                } catch (Exception e) {
-                    log.error("Error adding faculty at row {}: {}", i + 2, e.getMessage());
-                    errors.add(BulkUploadResponseDTO.ErrorRecordDTO.builder()
-                            .rowNumber(i + 2) // +2 because Excel rows start at 1 and header is row 1
-                            .employeeId(request.getEmployeeId())
-                            .email(request.getEmail())
-                            .errorMessage(e.getMessage())
-                            .rowData(convertRequestToMap(request))
-                            .build());
-                }
+    public BulkUploadResponseDTO bulkUploadFaculty(FacultyBulkUploadDTO bulkUploadDTO) {
+        List<FacultyRequestDTO> requests = excelHelper.parseFacultyExcel(bulkUploadDTO.getFile());
+        int success = 0;
+        for (FacultyRequestDTO req : requests) {
+            try {
+                addFaculty(req);
+                success++;
+            } catch (Exception e) {
+                log.error("Bulk upload row error: {}", e.getMessage());
             }
-            
-            response.setSuccessfulRecords(successCount);
-            response.setFailedRecords(facultyList.size() - successCount);
-            response.setSuccessfulData(successful.stream()
-                    .map(this::convertResponseToMap)
-                    .collect(Collectors.toList()));
-            response.setErrors(errors);
-            response.setStatus(successCount == facultyList.size() ? "SUCCESS" : 
-                              successCount > 0 ? "PARTIAL_SUCCESS" : "FAILED");
-            response.setMessage(String.format("Uploaded %d out of %d records successfully", 
-                    successCount, facultyList.size()));
-            
-        } catch (Exception e) {
-            log.error("Bulk upload failed: {}", e.getMessage());
-            response.setStatus("FAILED");
-            response.setMessage("Upload failed: " + e.getMessage());
+        }
+        return BulkUploadResponseDTO.builder()
+                .status(success == requests.size() ? "SUCCESS" : "PARTIAL")
+                .totalRecords(requests.size())
+                .successfulRecords(success)
+                .build();
+    }
+
+    @Override
+    public Page<FacultyResponseDTO> getAllFaculty(String searchTerm, String designation, 
+                                                   String role, Boolean isActive, Pageable pageable) {
+        Long deptId = SecurityUtils.getCurrentUserDepartmentId();
+        if (deptId == null) {
+            deptId = facultyProfileRepository.findByUserId(SecurityUtils.getCurrentUserId())
+                    .map(FacultyProfile::getDepartmentId)
+                    .orElse(null);
         }
         
-        return response;
-    }
-
-    @Override
-    public byte[] downloadFacultyTemplate() {
-        log.info("Downloading faculty upload template");
-        return excelHelper.generateFacultyTemplate();
-    }
-
-    @Override
-    public Page<FacultyResponseDTO> getAllFaculty(Long hodId, String searchTerm, String designation, 
-                                                   Role role, Boolean isActive, Pageable pageable) {
-        log.info("Fetching faculty list for HOD ID: {}", hodId);
+        if (deptId == null) {
+            log.warn("GET ALL FACULTY: Department ID is null in context and fallback failed.");
+            return new PageImpl<>(Collections.emptyList(), pageable, 0);
+        }
+        List<FacultyProfile> profiles = facultyProfileRepository.findByDepartmentId(deptId);
         
-        Faculty hod = getHodFaculty(hodId);
-        Long deptId = hod.getDepartment().getId();
-        
-        Page<Faculty> facultyPage = facultyRepository.searchFaculty(
-                searchTerm, deptId, designation, isActive, pageable);
-        
-        // Filter by role if specified
-        List<Faculty> filtered = facultyPage.getContent().stream()
-                .filter(f -> role == null || f.getRoles().contains(role))
+        List<FacultyResponseDTO> filtered = profiles.stream()
+                .map(p -> {
+                    User u = userRepository.findById(p.getUserId()).orElse(null);
+                    return mapToResponse(u, p);
+                })
+                .filter(Objects::nonNull)
+                .filter(res -> isActive == null || res.getIsActive().equals(isActive))
+                .filter(res -> designation == null || designation.isBlank() ||
+                        (res.getDesignation() != null && res.getDesignation().equalsIgnoreCase(designation)))
+                .filter(res -> role == null || role.isBlank() ||
+                        (res.getRoles() != null && res.getRoles().contains(role)))
+                .filter(res -> searchTerm == null || searchTerm.isBlank() ||
+                        (res.getName() != null && res.getName().toLowerCase().contains(searchTerm.toLowerCase())) ||
+                        (res.getEmail() != null && res.getEmail().toLowerCase().contains(searchTerm.toLowerCase())) ||
+                        (res.getEmployeeId() != null && res.getEmployeeId().toLowerCase().contains(searchTerm.toLowerCase())))
                 .collect(Collectors.toList());
-        
-        List<FacultyResponseDTO> dtos = filtered.stream()
-                .map(this::mapToResponseDTO)
-                .collect(Collectors.toList());
-        
-        return new PageImpl<>(dtos, pageable, facultyPage.getTotalElements());
+
+        return new PageImpl<>(filtered, pageable, filtered.size());
     }
 
     @Override
-    public FacultyResponseDTO getFacultyById(Long hodId, Long facultyId) {
-        log.info("Fetching faculty by ID: {} for HOD: {}", facultyId, hodId);
-        
-        Faculty hod = getHodFaculty(hodId);
-        Faculty faculty = getFaculty(facultyId);
-        
-        // Verify faculty belongs to HOD's department
-        if (!faculty.getDepartment().getId().equals(hod.getDepartment().getId())) {
-            throw new BadRequestException("Faculty does not belong to your department");
-        }
-        
-        return mapToResponseDTO(faculty);
+    public FacultyResponseDTO getFacultyById(Long facultyId) {
+        FacultyProfile profile = facultyProfileRepository.findById(facultyId)
+                .orElseThrow(() -> new ResourceNotFoundException("Faculty profile not found"));
+        User user = userRepository.findById(profile.getUserId())
+                .orElseThrow(() -> new ResourceNotFoundException("User associated with profile not found"));
+        return mapToResponse(user, profile);
     }
 
     @Override
-    public FacultyResponseDTO updateFaculty(Long hodId, Long facultyId, FacultyRequestDTO request) {
-        log.info("Updating faculty ID: {} by HOD: {}", facultyId, hodId);
+    public FacultyResponseDTO updateFaculty(Long facultyId, FacultyRequestDTO request) {
+        FacultyProfile profile = facultyProfileRepository.findById(facultyId)
+                .orElseThrow(() -> new ResourceNotFoundException("Faculty profile not found"));
         
-        Faculty hod = getHodFaculty(hodId);
-        Faculty faculty = getFaculty(facultyId);
-        
-        // Verify faculty belongs to HOD's department
-        if (!faculty.getDepartment().getId().equals(hod.getDepartment().getId())) {
-            throw new BadRequestException("Faculty does not belong to your department");
-        }
-        
-        // Update fields
-        faculty.setDesignation(request.getDesignation());
-        faculty.setQualification(request.getQualification());
-        faculty.setExperienceYears(request.getExperienceYears());
-        faculty.setSpecialization(request.getSpecialization());
-        faculty.setCabinNumber(request.getCabinNumber());
-        faculty.setOfficePhone(request.getOfficePhone());
-        faculty.setEmergencyContactName(request.getEmergencyContactName());
-        faculty.setEmergencyContactPhone(request.getEmergencyContactPhone());
-        faculty.setBloodGroup(request.getBloodGroup());
-        faculty.setAddress(request.getAddress());
-        faculty.setCity(request.getCity());
-        faculty.setState(request.getState());
-        faculty.setPincode(request.getPincode());
-        
-        // Update user fields
-        faculty.setFullName(request.getFullName());
-        faculty.setPhoneNumber(request.getPhoneNumber());
-        
-        faculty = facultyRepository.save(faculty);
-        
-        log.info("Faculty updated successfully: {}", facultyId);
-        
-        return mapToResponseDTO(faculty);
+        profile.setName(request.getName());
+        profile.setPhone(request.getPhone());
+        profile.setDesignation(request.getDesignation());
+        profile.setEmployeeId(request.getEmployeeId());
+        facultyProfileRepository.save(profile);
+
+        User user = userRepository.findById(profile.getUserId())
+                .orElseThrow(() -> new ResourceNotFoundException("User associated with faculty not found"));
+        return mapToResponse(user, profile);
     }
 
     @Override
-    public void deactivateFaculty(Long hodId, Long facultyId, String reason) {
-        log.info("Deactivating faculty ID: {} by HOD: {}, reason: {}", facultyId, hodId, reason);
-        
-        Faculty hod = getHodFaculty(hodId);
-        Faculty faculty = getFaculty(facultyId);
-        
-        // Verify faculty belongs to HOD's department
-        if (!faculty.getDepartment().getId().equals(hod.getDepartment().getId())) {
-            throw new BadRequestException("Faculty does not belong to your department");
-        }
-        
-        // Cannot deactivate self
-        if (facultyId.equals(hodId)) {
-            throw new BadRequestException("You cannot deactivate yourself");
-        }
-        
-        faculty.setIsActive(false);
-        facultyRepository.save(faculty);
-        
-        // Update department faculty count
-        Department dept = faculty.getDepartment();
-        dept.setTotalFaculty(dept.getTotalFaculty() - 1);
-        departmentRepository.save(dept);
-        
-        log.info("Faculty deactivated successfully: {}", facultyId);
+    public void deactivateFaculty(Long facultyId) {
+        FacultyProfile profile = facultyProfileRepository.findById(facultyId)
+                .orElseThrow(() -> new ResourceNotFoundException("Faculty profile not found"));
+        User user = userRepository.findById(profile.getUserId())
+                .orElseThrow(() -> new ResourceNotFoundException("User associated with faculty not found"));
+        user.setIsActive(false);
+        userRepository.save(user);
     }
 
     @Override
-    public void activateFaculty(Long hodId, Long facultyId) {
-        log.info("Activating faculty ID: {} by HOD: {}", facultyId, hodId);
-        
-        Faculty hod = getHodFaculty(hodId);
-        Faculty faculty = getFaculty(facultyId);
-        
-        // Verify faculty belongs to HOD's department
-        if (!faculty.getDepartment().getId().equals(hod.getDepartment().getId())) {
-            throw new BadRequestException("Faculty does not belong to your department");
-        }
-        
-        faculty.setIsActive(true);
-        facultyRepository.save(faculty);
-        
-        // Update department faculty count
-        Department dept = faculty.getDepartment();
-        dept.setTotalFaculty(dept.getTotalFaculty() + 1);
-        departmentRepository.save(dept);
-        
-        log.info("Faculty activated successfully: {}", facultyId);
+    public void activateFaculty(Long facultyId) {
+        FacultyProfile profile = facultyProfileRepository.findById(facultyId)
+                .orElseThrow(() -> new ResourceNotFoundException("Faculty profile not found"));
+        User user = userRepository.findById(profile.getUserId())
+                .orElseThrow(() -> new ResourceNotFoundException("User associated with faculty not found"));
+        user.setIsActive(true);
+        userRepository.save(user);
     }
 
     @Override
-    public FacultyResponseDTO assignRoles(Long hodId, Long facultyId, Set<Role> roles) {
-        log.info("Assigning roles to faculty ID: {} by HOD: {}, roles: {}", facultyId, hodId, roles);
+    public FacultyResponseDTO assignRoles(Long facultyId, List<FacultyRoleAssignmentDTO> roles) {
+        FacultyProfile profile = facultyProfileRepository.findById(facultyId)
+                .orElseThrow(() -> new ResourceNotFoundException("Faculty profile not found"));
         
-        Faculty hod = getHodFaculty(hodId);
-        Faculty faculty = getFaculty(facultyId);
+        facultyRoleRepository.deactivateAllForFaculty(profile.getId());
         
-        // Verify faculty belongs to HOD's department
-        if (!faculty.getDepartment().getId().equals(hod.getDepartment().getId())) {
-            throw new BadRequestException("Faculty does not belong to your department");
+        for (FacultyRoleAssignmentDTO r : roles) {
+            FacultyRole fr = facultyRoleRepository.findByFacultyIdAndRoleName(profile.getId(), r.getRoleName())
+                    .orElse(FacultyRole.builder()
+                            .facultyId(profile.getId())
+                            .roleName(r.getRoleName())
+                            .build());
+            fr.setIsActive(true);
+            fr.setConfig(r.getConfig());
+            facultyRoleRepository.save(fr);
         }
-        
-        // Update user roles
-        faculty.setRoles(roles);
-        facultyRepository.save(faculty);
-        
-        // Update faculty role flags
-        faculty.setIsMentor(roles.contains(Role.FACULTY_MENTOR));
-        faculty.setIsClassAdvisor(roles.contains(Role.FACULTY_CLASS_ADVISOR));
-        faculty.setIsEventCoordinator(roles.contains(Role.FACULTY_EVENT_COORDINATOR));
-        
-        faculty = facultyRepository.save(faculty);
-        
-        log.info("Roles assigned successfully to faculty: {}", facultyId);
-        
-        return mapToResponseDTO(faculty);
+
+        User user = userRepository.findById(profile.getUserId())
+                .orElseThrow(() -> new ResourceNotFoundException("User associated with faculty not found"));
+        return mapToResponse(user, profile);
     }
 
     @Override
-    public Map<String, Object> getFacultyStatistics(Long hodId) {
-        log.info("Getting faculty statistics for HOD: {}", hodId);
-        
-        Faculty hod = getHodFaculty(hodId);
-        Long deptId = hod.getDepartment().getId();
-        
+    public Map<String, Object> getFacultyStatistics() {
+        Long deptId = SecurityUtils.getCurrentUserDepartmentId();
         Map<String, Object> stats = new HashMap<>();
-        
-        // Basic counts
-        stats.put("totalFaculty", facultyRepository.countActiveByDepartment(deptId));
-        stats.put("totalMentors", getFacultyCountByRole(deptId, Role.FACULTY_MENTOR));
-        stats.put("totalClassAdvisors", getFacultyCountByRole(deptId, Role.FACULTY_CLASS_ADVISOR));
-        stats.put("totalEventCoordinators", getFacultyCountByRole(deptId, Role.FACULTY_EVENT_COORDINATOR));
-        
-        // Distribution by designation
-        Map<String, Long> byDesignation = facultyRepository.findByDepartmentId(deptId).stream()
-                .filter(Faculty::getIsActive)
-                .collect(Collectors.groupingBy(
-                        f -> f.getDesignation() != null ? f.getDesignation() : "Not Specified",
-                        Collectors.counting()
-                ));
-        stats.put("byDesignation", byDesignation);
-        
-        // Distribution by experience
-        Map<String, Long> byExperience = facultyRepository.findByDepartmentId(deptId).stream()
-                .filter(Faculty::getIsActive)
-                .collect(Collectors.groupingBy(
-                        f -> {
-                            if (f.getExperienceYears() == null) return "Not Specified";
-                            if (f.getExperienceYears() < 5) return "0-5 years";
-                            if (f.getExperienceYears() < 10) return "5-10 years";
-                            return "10+ years";
-                        },
-                        Collectors.counting()
-                ));
-        stats.put("byExperience", byExperience);
-        
-        // Faculty with pending approvals
-        List<Object[]> facultyWithPending = facultyRepository.findFacultyWithPendingCount(deptId);
-        stats.put("facultyWithPendingApprovals", facultyWithPending);
-        
+        stats.put("totalFaculty", facultyProfileRepository.findByDepartmentId(deptId).size());
         return stats;
     }
 
-    @Override
-    public boolean isEmployeeIdExists(String employeeId) {
-        return facultyRepository.existsByEmployeeId(employeeId);
-    }
-
-    @Override
-    public boolean isEmailExists(String email) {
-        return userRepository.existsByEmail(email);
-    }
-
-    // ==================== PRIVATE HELPER METHODS ====================
-
-    private Faculty getHodFaculty(Long hodId) {
-        return facultyRepository.findById(hodId)
-                .orElseThrow(() -> new ResourceNotFoundException("HOD not found with ID: " + hodId));
-    }
-
-    private Faculty getFaculty(Long facultyId) {
-        return facultyRepository.findById(facultyId)
-                .orElseThrow(() -> new ResourceNotFoundException("Faculty not found with ID: " + facultyId));
-    }
-
-    private long getFacultyCountByRole(Long deptId, Role role) {
-        return facultyRepository.findByRoleAndDepartment(role, deptId).size();
-    }
-
-    private FacultyResponseDTO mapToResponseDTO(Faculty faculty) {
-        // Calculate mentees count
-        long menteesCount = studentRepository.findByMentorId(faculty.getId()).size();
+    private FacultyResponseDTO mapToResponse(User user, FacultyProfile profile) {
+        if (profile == null) return null;
         
-        // Calculate advised class count
-        long advisedClassCount = studentRepository.findByClassAdvisorId(faculty.getId()).size();
+        List<FacultyRole> roles = facultyRoleRepository.findByFacultyIdAndIsActiveTrue(profile.getId());
+        Set<String> roleNames = roles.stream()
+                .filter(r -> r.getRoleName() != null)
+                .map(FacultyRole::getRoleName)
+                .collect(Collectors.toSet());
         
+        List<FacultyRoleAssignmentDTO> assignments = roles.stream()
+                .map(r -> FacultyRoleAssignmentDTO.builder()
+                        .roleName(r.getRoleName())
+                        .config(r.getConfig())
+                        .build())
+                .collect(Collectors.toList());
+
         return FacultyResponseDTO.builder()
-                .id(faculty.getId())
-                .employeeId(faculty.getEmployeeId())
-                .fullName(faculty.getFullName())
-                .email(faculty.getEmail())
-                .phoneNumber(faculty.getPhoneNumber())
-                .profilePicture(faculty.getProfilePicture())
-                .departmentId(faculty.getDepartment() != null ? faculty.getDepartment().getId() : null)
-                .departmentName(faculty.getDepartment() != null ? faculty.getDepartment().getName() : null)
-                .departmentCode(faculty.getDepartment() != null ? faculty.getDepartment().getCode() : null)
-                .designation(faculty.getDesignation())
-                .qualification(faculty.getQualification())
-                .experienceYears(faculty.getExperienceYears())
-                .joiningDate(faculty.getJoiningDate())
-                .roles(faculty.getRoles())
-                .isMentor(faculty.getIsMentor())
-                .isClassAdvisor(faculty.getIsClassAdvisor())
-                .isEventCoordinator(faculty.getIsEventCoordinator())
-                .maxMentees(faculty.getMaxMentees())
-                .currentMentees(faculty.getCurrentMentees())
-                .menteesCount(menteesCount)
-                .advisedClassCount(advisedClassCount)
-                .specialization(faculty.getSpecialization())
-                .cabinNumber(faculty.getCabinNumber())
-                .officePhone(faculty.getOfficePhone())
-                .emergencyContactName(faculty.getEmergencyContactName())
-                .emergencyContactPhone(faculty.getEmergencyContactPhone())
-                .bloodGroup(faculty.getBloodGroup())
-                .dateOfBirth(faculty.getDateOfBirth())
-                .address(faculty.getAddress())
-                .city(faculty.getCity())
-                .state(faculty.getState())
-                .pincode(faculty.getPincode())
-                .isActive(faculty.getIsActive())
-                .isFirstLogin(faculty.getIsFirstLogin())
-                .lastLoginAt(faculty.getLastLoginAt())
-                .createdAt(faculty.getCreatedAt())
+                .id(profile.getId())
+                .userId(user != null ? user.getId() : null)
+                .employeeId(profile.getEmployeeId())
+                .name(profile.getName())
+                .fullName(profile.getName())
+                .email(user != null ? user.getEmail() : null)
+                .phone(profile.getPhone())
+                .designation(profile.getDesignation())
+                .profilePicPath(profile.getProfilePicPath())
+                .profilePicture(profile.getProfilePicPath())
+                .roles(roleNames)
+                .roleAssignments(assignments)
+                .isActive(user != null ? Boolean.TRUE.equals(user.getIsActive()) : false)
+                .isFirstLogin(user != null ? Boolean.TRUE.equals(user.getFirstLogin()) : false)
+                .createdAt(profile.getCreatedAt())
                 .build();
-    }
-
-    private Map<String, Object> convertRequestToMap(FacultyRequestDTO request) {
-        Map<String, Object> map = new HashMap<>();
-        map.put("employeeId", request.getEmployeeId());
-        map.put("fullName", request.getFullName());
-        map.put("email", request.getEmail());
-        map.put("phoneNumber", request.getPhoneNumber());
-        map.put("designation", request.getDesignation());
-        map.put("qualification", request.getQualification());
-        map.put("experienceYears", request.getExperienceYears());
-        return map;
-    }
-
-    private Map<String, Object> convertResponseToMap(FacultyResponseDTO response) {
-        Map<String, Object> map = new HashMap<>();
-        map.put("id", response.getId());
-        map.put("employeeId", response.getEmployeeId());
-        map.put("fullName", response.getFullName());
-        map.put("email", response.getEmail());
-        map.put("designation", response.getDesignation());
-        return map;
     }
 }

@@ -1,13 +1,8 @@
 package com.permithub.entity;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.NoArgsConstructor;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-
-import java.time.LocalDate;
+import lombok.*;
+import lombok.experimental.SuperBuilder;
 import java.time.LocalDateTime;
 
 @Entity
@@ -16,74 +11,47 @@ import java.time.LocalDateTime;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
+@SuperBuilder
 public class LeaveRequest extends BaseEntity {
     
-    @ManyToOne
-    @JoinColumn(name = "student_id", nullable = false)
-    private Student student;
+    @Column(name = "studentId", nullable = false)
+    private Long studentId; // Reference to student_profiles.id
     
-    @Column(nullable = false)
-    private LocalDate startDate;
+    @Column(name = "departmentId", nullable = false)
+    private Long departmentId;
     
-    @Column(nullable = false)
-    private LocalDate endDate;
+    @Column(name = "categoryId", nullable = false)
+    private Long categoryId;
     
-    @Column(nullable = false)
-    private Integer totalDays;
+    @Column(name = "startDate", nullable = false)
+    private LocalDateTime startDate;
     
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private LeaveCategory category; // SICK, EMERGENCY, OTHER
+    @Column(name = "endDate", nullable = false)
+    private LocalDateTime endDate;
     
-    @Column(length = 500)
+    @Column(columnDefinition = "TEXT")
     private String reason;
     
-    @Column(name = "medical_certificate_path")
-    private String medicalCertificatePath;
+    @Column(name = "attachmentPath")
+    private String attachmentPath;
     
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private RequestStatus status;
-    
-    @ManyToOne
-    @JoinColumn(name = "mentor_id")
-    private Faculty mentor;
-    
-    @Column(name = "mentor_remark", length = 500)
-    private String mentorRemark;
-    
-    @Column(name = "mentor_action_date")
-    private LocalDateTime mentorActionDate;
-    
-    @ManyToOne
-    @JoinColumn(name = "class_advisor_id")
-    private Faculty classAdvisor;
-    
-    @Column(name = "class_advisor_remark", length = 500)
-    private String classAdvisorRemark;
-    
-    @Column(name = "class_advisor_action_date")
-    private LocalDateTime classAdvisorActionDate;
-    
-    @ManyToOne
-    @JoinColumn(name = "hod_id")
-    private Faculty hod;
-    
-    @Column(name = "hod_remark", length = 500)
-    private String hodRemark;
-    
-    @Column(name = "hod_action_date")
-    private LocalDateTime hodActionDate;
-    
-    @Column(name = "applied_date", nullable = false)
-    private LocalDateTime appliedDate;
-    
-    @Column(name = "is_emergency")
+    @Column(length = 50)
     @Builder.Default
-    private Boolean isEmergency = false;
+    private String status = "PENDING"; // PENDING, MENTOR_APPROVED...
     
-    @Column(name = "parent_notified")
+    @Column(name = "mentorId")
+    private Long mentorId; // faculty_profile_id
+    
+    @Column(name = "advisorId")
+    private Long advisorId; // faculty_profile_id
+    
+    @Column(name = "hodId")
+    private Long hodId; // user_id (HOD)
+    
+    @Column(name = "approvedAt")
+    private LocalDateTime approvedAt;
+    
+    @Column(name = "appliedAt")
     @Builder.Default
-    private Boolean parentNotified = false;
+    private LocalDateTime appliedAt = LocalDateTime.now();
 }

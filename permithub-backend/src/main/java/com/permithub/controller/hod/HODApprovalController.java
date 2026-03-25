@@ -22,12 +22,12 @@ import java.util.Map;
 @RestController
 @RequestMapping("/hod/approvals")
 @RequiredArgsConstructor
-@PreAuthorize("hasRole('HOD')")
+@PreAuthorize("hasAuthority('ROLE_HOD')")
 public class HODApprovalController {
 
     private final HODApprovalService approvalService;
 
-    @GetMapping("/pending")
+    @GetMapping({"/pending", "/requests/pending"})
     public ResponseEntity<ApiResponse<Page<Map<String, Object>>>> getPendingApprovals(
             @AuthenticationPrincipal CustomUserDetails currentUser,
             @RequestParam(defaultValue = "0") int page,

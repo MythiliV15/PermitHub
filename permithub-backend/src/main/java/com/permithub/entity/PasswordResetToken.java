@@ -1,12 +1,8 @@
 package com.permithub.entity;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.NoArgsConstructor;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-
+import lombok.*;
+import lombok.experimental.SuperBuilder;
 import java.time.LocalDateTime;
 
 @Entity
@@ -15,24 +11,22 @@ import java.time.LocalDateTime;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
+@SuperBuilder
 public class PasswordResetToken extends BaseEntity {
     
-    @Column(nullable = false, unique = true)
+    @Column(name = "userId", nullable = false)
+    private Long userId;
+
+    @Column(nullable = false, unique = true, length = 255)
     private String token;
     
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+    @Column(name = "expiresAt", nullable = false)
+    private LocalDateTime expiresAt;
     
-    @Column(nullable = false)
-    private LocalDateTime expiryDate;
-    
-    @Column(nullable = false)
-    @Builder.Default
-    private Boolean isUsed = false;
+    @Column(name = "usedAt")
+    private LocalDateTime usedAt;
     
     public boolean isExpired() {
-        return LocalDateTime.now().isAfter(expiryDate);
+        return LocalDateTime.now().isAfter(expiresAt);
     }
 }

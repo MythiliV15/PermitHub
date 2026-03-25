@@ -1,12 +1,8 @@
 package com.permithub.entity;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.NoArgsConstructor;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-
+import lombok.*;
+import lombok.experimental.SuperBuilder;
 import java.time.LocalDate;
 
 @Entity
@@ -15,72 +11,53 @@ import java.time.LocalDate;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
+@SuperBuilder
 public class Semester extends BaseEntity {
 
-    @Column(nullable = false)
-    private String name;  // e.g., "Fall 2024", "Spring 2024"
+    @Column(name = "departmentId", nullable = false)
+    private Long departmentId;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 100)
+    private String name;
+
+    @Column(name = "year")
     private Integer year;
 
-    @Column(name = "semester_number")
-    private Integer semesterNumber;  // 1-8
+    @Column(name = "semesterNumber")
+    private Integer semesterNumber;
 
-    @Column(name = "start_date")
+    @Column(name = "academicYear", nullable = false, length = 20)
+    private String academicYear;
+
+    @Column(name = "startDate", nullable = false)
     private LocalDate startDate;
 
-    @Column(name = "end_date")
+    @Column(name = "endDate", nullable = false)
     private LocalDate endDate;
 
-    @Column(name = "is_active")
-    @Builder.Default
-    private Boolean isActive = false;
+    @Column(name = "registrationStartDate")
+    private LocalDate registrationStartDate;
 
-    @Column(name = "default_leave_balance")
+    @Column(name = "registrationEndDate")
+    private LocalDate registrationEndDate;
+
+    @Column(name = "examStartDate")
+    private LocalDate examStartDate;
+
+    @Column(name = "examEndDate")
+    private LocalDate examEndDate;
+
+    @Column(name = "resultDate")
+    private LocalDate resultDate;
+
+    @Column(name = "semesterType", length = 20)
+    private String semesterType; // ODD, EVEN, SUMMER
+
+    @Column(name = "defaultLeaveBalance", nullable = false)
     @Builder.Default
     private Integer defaultLeaveBalance = 20;
 
-    @ManyToOne
-    @JoinColumn(name = "department_id")
-    private Department department;
-
-    // Additional semester management fields
-    @Column(name = "registration_start_date")
-    private LocalDate registrationStartDate;
-
-    @Column(name = "registration_end_date")
-    private LocalDate registrationEndDate;
-
-    @Column(name = "exam_start_date")
-    private LocalDate examStartDate;
-
-    @Column(name = "exam_end_date")
-    private LocalDate examEndDate;
-
-    @Column(name = "result_date")
-    private LocalDate resultDate;
-
-    @Column(name = "academic_year")
-    private String academicYear; // e.g., "2024-2025"
-
-    @Column(name = "semester_type")
+    @Column(name = "isActive", nullable = false)
     @Builder.Default
-    private String semesterType = "ODD"; // ODD, EVEN, SUMMER
-
-    @ManyToOne
-    @JoinColumn(name = "created_by")
-    private User createdBy;
-
-    @Column(name = "is_registration_open")
-    @Builder.Default
-    private Boolean isRegistrationOpen = false;
-
-    @Column(name = "is_exam_period")
-    @Builder.Default
-    private Boolean isExamPeriod = false;
-
-    @Column(name = "is_result_declared")
-    @Builder.Default
-    private Boolean isResultDeclared = false;
+    private Boolean isActive = false;
 }

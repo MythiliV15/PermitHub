@@ -1,20 +1,11 @@
 package com.permithub.entity;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.NoArgsConstructor;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
-
-import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.Set;
 
 @Entity
 @Table(name = "users")
-@Inheritance(strategy = InheritanceType.JOINED)
 @Getter
 @Setter
 @NoArgsConstructor
@@ -22,43 +13,26 @@ import java.util.Set;
 @SuperBuilder
 public class User extends BaseEntity {
     
-    @Column(unique = true, nullable = false)
+    @Column(unique = true, nullable = false, length = 150)
     private String email;
     
-    @Column(nullable = false)
+    @Column(nullable = false, length = 255)
     private String password;
     
-    @Column(name = "full_name", nullable = false)
-    private String fullName;
+    @Column(nullable = false, length = 20)
+    private String role;
     
-    @Column(name = "phone_number")
-    private String phoneNumber;
+    @Column(name = "departmentId")
+    private Long departmentId;
     
-    @Column(name = "profile_picture")
-    private String profilePicture;
+    @Column(name = "hostelType", length = 10)
+    private String hostelType;
     
-    @ElementCollection(fetch = FetchType.EAGER)
-    @CollectionTable(name = "user_roles", 
-                     joinColumns = @JoinColumn(name = "user_id"))
-    @Column(name = "role")
-    @Enumerated(EnumType.STRING)
+    @Column(name = "firstLogin", nullable = false)
     @Builder.Default
-    private Set<Role> roles = new HashSet<>();
+    private Boolean firstLogin = true;
     
-    @Column(name = "is_first_login")
+    @Column(name = "isActive", nullable = false)
     @Builder.Default
-    private Boolean isFirstLogin = true;
-    
-    @Column(name = "last_login_at")
-    private LocalDateTime lastLoginAt;
-    
-    @Column(name = "last_login_ip")
-    private String lastLoginIp;
-    
-    @Column(name = "email_verified")
-    @Builder.Default
-    private Boolean emailVerified = false;
-    
-    @Column(name = "email_verified_at")
-    private LocalDateTime emailVerifiedAt;
+    private Boolean isActive = true;
 }
